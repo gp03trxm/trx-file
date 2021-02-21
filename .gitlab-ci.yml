@@ -1,0 +1,45 @@
+image:
+  name: docker/compose:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - apk --update add nodejs nodejs-npm bash git openssh
+  - npx n 12
+  - docker version
+  - docker-compose version
+  - node -v
+
+stages:
+  - test
+  - deploy
+
+main_test:
+  stage: test
+  script:
+    - npm install
+    - npm run test
+  except:
+    - /^feature\/deploy.*$/
+
+deploy_to_production:
+  stage: deploy
+  variables:
+    REPOSITORY_NAME: $CI_PROJECT_NAME
+    HOSTS: trx-vnpay
+  script:
+    - ./ci/deploy.sh
+  only:
+    - tags
+
+deploy_to_staging:
+  stage: deploy
+  variables:
+    REPOSITORY_NAME: $CI_PROJECT_NAME
+    HOSTS: trx-trxm dfg-beta-cn dfg-wbcn
+  script:
+    - ./ci/deploy.sh
+  only:
+    - master
+    - /^feature\/deploy.*$/

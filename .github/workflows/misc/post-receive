@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+echo "[post-receive]" $BASH_VERSION
+
+#
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-receive".
+# https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+BRANCH="running"
+GIT_DIR=${DIR//\/hooks/}
+WORK_DIR=${DIR//\.git\/hooks/}
+
+echo "git_dir: $GIT_DIR"
+echo "work_dir: $WORK_DIR"
+
+while read oldrev newrev ref
+do
+  # only checking out the running (or whatever branch you would like to deploy)
+  if [ "$ref" = "refs/heads/$BRANCH" ];
+  then
+    echo "Ref $ref received. Deploying ${BRANCH} branch to production..."
+    git --work-tree=$WORK_DIR --git-dir=$GIT_DIR checkout -f $BRANCH
+    cd $WORK_DIR
+    npm install && npm run start:pm2
+  else
+    echo "Ref $ref received. Doing nothing: only the ${BRANCH} branch may be deployed on this server."
+  fi
+done

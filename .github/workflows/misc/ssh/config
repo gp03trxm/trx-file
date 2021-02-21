@@ -1,0 +1,14 @@
+Host *
+User ubuntu
+IdentityFile ~/.ssh/id_rsa_deploy
+StrictHostKeyChecking no
+ForwardAgent yes
+
+Host trx-alpha-1
+Hostname 34.80.189.77
+
+Host trx-beta-vn
+Hostname 35.201.231.40
+
+Host dfg-beta-cn
+Hostname 34.80.81.163
