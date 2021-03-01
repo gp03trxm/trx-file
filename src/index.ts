@@ -8,8 +8,11 @@ import { destination } from './constants';
 import sharp from 'sharp';
 import cors from 'cors';
 import { serializeError } from 'serialize-error';
+import { init as gcsInit } from './libs/gcs';
 
 require('./libs/console-override');
+
+gcsInit().catch(console.error);
 
 const app = express();
 app.use(cors());

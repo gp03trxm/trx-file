@@ -4,6 +4,7 @@ import fs from 'fs';
 import { v4 as uuid } from 'uuid';
 import { FileConfig } from '../types';
 import { destination } from '../constants';
+import { cp as gcsCp } from '../libs/gcs';
 
 const splitExtension = (name: String) => {
   const index = name.lastIndexOf('.');
@@ -62,5 +63,18 @@ export const fileConfigMiddleware = (
   const fileConfigPath = `${destination}/${filename}.json`;
   fs.writeFileSync(fileConfigPath, JSON.stringify(fileConfig, null, 2));
   Object.assign(req, { fileConfig, fileConfigPath });
+
+  gcsCp(`${destination}/${filename}`, `uploads/${filename}`)
+    .then(() => {
+      console.log(`[fileConfigMiddleware] gcs uploaded ${filename}`);
+    })
+    .catch(console.error);
+
+  gcsCp(fileConfigPath, `uploads/${filename}.json`)
+    .then(() => {
+      console.log(`[fileConfigMiddleware] gcs uploaded ${filename}.json`);
+    })
+    .catch(console.error);
+
   next();
 };
