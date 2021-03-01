@@ -8,7 +8,7 @@ import { destination } from './constants';
 import sharp from 'sharp';
 import cors from 'cors';
 import { serializeError } from 'serialize-error';
-import { init as gcsInit } from './libs/gcs';
+import { download, fileExists, init as gcsInit } from './libs/gcs';
 
 require('./libs/console-override');
 
@@ -25,7 +25,23 @@ app.get('/', (req, res) => {
   });
 });
 
-app.use('/files', express.static('uploads'));
+app.use('/files', express.static(destination), async (req, res) => {
+  console.log(`[GET /files${req.path}] file not found`);
+  try {
+    const gcsFilename = destination + req.path;
+    if (await fileExists(gcsFilename)) {
+      console.log(`[GET /files${req.path}] download file from gcs`);
+      await download(gcsFilename);
+      res.redirect(req.originalUrl);
+    } else {
+      res.status(404);
+      res.json({ message: 'file not found' });
+    }
+  } catch (e) {
+    res.status(500);
+    res.json({ message: e.message });
+  }
+});
 
 app.post(
   '/files',

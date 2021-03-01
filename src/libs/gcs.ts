@@ -1,4 +1,5 @@
 import { Storage } from '@google-cloud/storage';
+import { destination } from '../constants';
 
 const keyFilename = process.cwd() + '/gcp-service-key.json';
 const storage = new Storage({
@@ -34,4 +35,15 @@ export async function cp(localFilename: string, destination: string) {
       cacheControl: 'public, max-age=31536000',
     },
   });
+}
+
+export async function fileExists(filename: string) {
+  return (await storage.bucket(bucketName).file(filename).exists())[0];
+}
+
+export async function download(filename: string) {
+  return await storage
+    .bucket(bucketName)
+    .file(filename)
+    .download({ destination: filename });
 }
