@@ -37,7 +37,7 @@ deploy_to_staging:
   stage: deploy
   variables:
     REPOSITORY_NAME: $CI_PROJECT_NAME
-    HOSTS: trx-trxm dfg-beta-cn dfg-wbcn
+    HOSTS: trx-trxm dfg-beta-cn dfg-wbcn trx-sk
   script:
     - ./ci/deploy.sh
   only:
