@@ -5,7 +5,7 @@
 ```bash
 curl --location --request POST 'http://localhost:3005/files' \
 --header 'Content-Type: multipart/form-data' \
---form 'file=@/Users/ggm/Developer/tokamak-labs/trx-file/testdata/screenshot.png' \
+--form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/screenshot.png' \
 --form 'userId=b092bd4d' | jq
 ```
 
