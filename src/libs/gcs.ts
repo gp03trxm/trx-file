@@ -41,9 +41,15 @@ export async function fileExists(filename: string) {
   return (await storage.bucket(bucketName).file(filename).exists())[0];
 }
 
+/**
+ * https://googleapis.dev/nodejs/storage/latest/File.html
+ * @param filename
+ * @returns
+ */
 export async function download(filename: string) {
-  return await storage
+  await storage
     .bucket(bucketName)
     .file(filename)
     .download({ destination: filename });
+  return storage.bucket(bucketName).file(filename).getMetadata();
 }

@@ -10,6 +10,13 @@ import cors from 'cors';
 import { serializeError } from 'serialize-error';
 import { download, fileExists, init as gcsInit } from './libs/gcs';
 
+import low from 'lowdb';
+import FileSync from 'lowdb/adapters/FileSync';
+import _ from 'lodash';
+
+const db = low(new FileSync('db.json'));
+db.defaults({ retrievedFiles: [] }).write();
+
 require('./libs/console-override');
 
 gcsInit().catch(console.error);
@@ -25,6 +32,14 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/db', (req, res) => {
+  res.json(db.getState());
+});
+
+app.get('/db/:key', (req, res) => {
+  res.json(db.get(req.params.key).value());
+});
+
 app.use('/files', express.static(destination), async (req, res, next) => {
   if (req.method !== 'GET') {
     return next();
@@ -35,7 +50,12 @@ app.use('/files', express.static(destination), async (req, res, next) => {
     const gcsFilename = destination + req.path;
     if (await fileExists(gcsFilename)) {
       console.log(`[GET /files${req.path}] download file from gcs`);
-      await download(gcsFilename);
+      const [fileMeta, headers] = await download(gcsFilename);
+
+      (db.get('retrievedFiles') as any)
+        .push(_.pick(fileMeta, 'name', 'size', 'updated'))
+        .write();
+
       res.redirect(req.originalUrl);
     } else {
       res.status(404);
