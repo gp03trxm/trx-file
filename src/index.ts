@@ -1,25 +1,26 @@
-import express from 'express';
-import fs from 'fs';
-import fetch from 'node-fetch';
-import { getNumber } from './image-process/ocr';
-import { Response, OcrResult, TrxFileRequest } from './types';
-import { uploadMiddleware, fileConfigMiddleware } from './middlewares';
-import { destination } from './constants';
-import sharp from 'sharp';
-import cors from 'cors';
-import { serializeError } from 'serialize-error';
-import { download, fileExists, init as gcsInit } from './libs/gcs';
-
-import low from 'lowdb';
-import FileSync from 'lowdb/adapters/FileSync';
 import _ from 'lodash';
+import cors from 'cors';
+import express from 'express';
+import fetch from 'node-fetch';
+import FileSync from 'lowdb/adapters/FileSync';
+import fs from 'fs';
+import low from 'lowdb';
+import sharp from 'sharp';
+import { destination } from './constants';
+import { download, fileExists, init as gcsInit } from './libs/gcs';
+import { fileConfigMiddleware, uploadMiddleware } from './middlewares';
+import { getNumber } from './image-process/ocr';
+import { OcrResult, Response, TrxFileRequest } from './types';
+import { serializeError } from 'serialize-error';
+import fileCleaner from './libs/file-cleaner';
+
+require('./libs/console-override');
 
 const db = low(new FileSync('db.json'));
 db.defaults({ retrievedFiles: [] }).write();
 
-require('./libs/console-override');
-
 gcsInit().catch(console.error);
+fileCleaner.startAsService().catch(console.error);
 
 const app = express();
 app.use(cors());
