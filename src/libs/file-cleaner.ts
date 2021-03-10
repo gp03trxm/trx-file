@@ -13,6 +13,8 @@ const run = async (dirName = 'uploads') => {
      */
     if (
       !stat.isFile ||
+      stat.isSymbolicLink ||
+      stat.isDirectory ||
       f.indexOf('script-') !== -1 ||
       f.indexOf('apk') !== -1
     ) {
