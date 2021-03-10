@@ -9,16 +9,20 @@ const run = async (dirName = 'uploads') => {
     const stat = fs.statSync(fileWithDir);
 
     /**
-     * skip directory and script-*.js
+     * skip directory, script-*.js and *.apk
      */
-    if (!stat.isFile || f.indexOf('script-') !== -1) {
+    if (
+      !stat.isFile ||
+      f.indexOf('script-') !== -1 ||
+      f.indexOf('apk') !== -1
+    ) {
       console.log('[filter-cleaner] skip file', f);
       continue;
     }
 
     const diff = +now - +stat.atime;
     if (diff >= 1000 * 60 * 60 * 24) {
-      console.warn('[filter-cleaner] delete file', f);
+      console.log('[filter-cleaner] delete file', f);
       fs.unlinkSync(fileWithDir);
     }
   }
