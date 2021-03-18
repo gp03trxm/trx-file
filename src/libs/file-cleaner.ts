@@ -12,13 +12,19 @@ const run = async (dirName = 'uploads') => {
      * skip directory, script-*.js and *.apk
      */
     if (
-      !stat.isFile ||
-      stat.isSymbolicLink ||
-      stat.isDirectory ||
+      !stat.isFile() ||
+      stat.isSymbolicLink() ||
+      stat.isDirectory() ||
       f.indexOf('script-') !== -1 ||
       f.indexOf('apk') !== -1
     ) {
-      console.log('[filter-cleaner] skip file', f);
+      console.log(
+        '[filter-cleaner] skip file',
+        f,
+        stat.isFile(),
+        stat.isSymbolicLink(),
+        stat.isDirectory(),
+      );
       continue;
     }
 
