@@ -16,7 +16,7 @@ export async function init() {
   if (existedBuckets.indexOf(bucketName) === -1) {
     console.log('[gcs-init] create a bucket');
     await storage.createBucket(bucketName, {
-      archive: true,
+      standard: true,
       location: 'asia-east1',
     });
     console.log('[gcs-init] done');
