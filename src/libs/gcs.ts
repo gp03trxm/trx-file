@@ -6,7 +6,7 @@ const storage = new Storage({
   keyFilename,
 });
 
-const bucketName = 'trx-file-anonymous' + (process.env.SITE_NAME || 'vnpay');
+const bucketName = 'trx-file-anonymous-' + (process.env.SITE_NAME || 'vnpay');
 
 export async function init() {
   console.log('[gcs-init] getting bucket', bucketName);
