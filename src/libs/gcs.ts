@@ -2,7 +2,7 @@ import { Storage } from '@google-cloud/storage';
 
 const keyFilename = process.cwd() + '/gcp-service-key.json';
 const storage = new Storage({
-  projectId: 'ggm-project',
+  projectId: 'trxvn888',
   keyFilename,
 });
 
