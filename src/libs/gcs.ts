@@ -1,5 +1,4 @@
 import { Storage } from '@google-cloud/storage';
-import { destination } from '../constants';
 
 const keyFilename = process.cwd() + '/gcp-service-key.json';
 const storage = new Storage({
@@ -7,7 +6,7 @@ const storage = new Storage({
   keyFilename,
 });
 
-const bucketName = 'trx-file-' + (process.env.SITE_NAME || 'vnpay');
+const bucketName = 'trx-file-anonymous' + (process.env.SITE_NAME || 'vnpay');
 
 export async function init() {
   console.log('[gcs-init] getting bucket', bucketName);
