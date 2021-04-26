@@ -6,7 +6,7 @@ import FileSync from 'lowdb/adapters/FileSync';
 import fs from 'fs';
 import low from 'lowdb';
 import sharp from 'sharp';
-import { destination } from './constants';
+import { destination, HTTP_PORT, SCHEDULER_API } from './constants';
 import { download, fileExists, init as gcsInit } from './libs/gcs';
 import { fileConfigMiddleware, uploadMiddleware } from './middlewares';
 import { getNumber } from './image-process/ocr';
@@ -138,7 +138,7 @@ app.post(
     const { appId, version } = req.body;
     const { fileConfig } = req;
 
-    const api = process.env.SCHEDULER_API || 'http://localhost:3000';
+    const api = SCHEDULER_API;
     const upgradeApi = `${api}/configs/app-version/upgrade`;
     const json = await fetch(upgradeApi, {
       method: 'POST',
@@ -150,6 +150,4 @@ app.post(
   },
 );
 
-const port = process.env.PORT || 3005;
-
-app.listen(port, () => console.log(`App listening on port ${port}`));
+app.listen(HTTP_PORT, () => console.log(`App listening on port ${+HTTP_PORT}`));
