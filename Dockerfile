@@ -27,9 +27,10 @@ RUN npm run build
 ENV NODE_ENV=dev
 ENV COMPONENT=file
 ENV SITE_NAME=trxm
+ENV SCHEDULER_API=http://localhost:3000
 ENV HTTP_PORT=3005
 
 EXPOSE ${HTTP_PORT}
 
 ENTRYPOINT ["npm"]
-CMD ["run", "start:pm2:no-daemon"]
+CMD ["run", "start:pm2:docker"]

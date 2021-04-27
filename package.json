@@ -11,7 +11,7 @@
     "start": "npm run build && node -r dotenv/config dist/index.js",
     "start:dev": "npm run build:watch & nodemon --watch dist dist/index.js",
     "start:pm2": "npm run build && pm2 startOrReload ecosystem.config.js --env production --update-env",
-    "start:pm2:no-daemon": "npm run build && pm2 startOrReload ecosystem.config.js --no-daemon --env production --update-env",
+    "start:pm2:docker": "npm run build && pm2 startOrReload ecosystem.config.js --no-daemon --env production --update-env",
     "upload:smshook": "./scripts/upgrade-smshook.sh"
   },
   "author": "",
