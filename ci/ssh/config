@@ -5,7 +5,7 @@ StrictHostKeyChecking no
 ForwardAgent yes
 
 Host trx-vnpay
-Hostname 35.194.230.53
+Hostname 35.201.231.40
 
 Host dfg-beta-cn
 Hostname 34.80.81.163
