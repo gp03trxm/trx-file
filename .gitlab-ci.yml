@@ -31,7 +31,7 @@ deploy_to_production:
     REPOSITORY_NAME: $CI_PROJECT_NAME
     HOSTS: trx-vnpay
   script:
-    - ./ci/deploy.sh
+    - echo temporary disable
   only:
     - /^v.*$/
 
@@ -41,7 +41,7 @@ deploy_to_staging:
     REPOSITORY_NAME: $CI_PROJECT_NAME
     HOSTS: dfg-beta-cn trx-sk
   script:
-    - ./ci/deploy.sh
+    - echo temporary disable
   only:
     - master
     - /^feature\/deploy.*$/
