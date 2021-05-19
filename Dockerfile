@@ -3,6 +3,11 @@ FROM node:12-alpine
 
 WORKDIR /home/node/app
 
+RUN apk --no-cache add curl vim
+
+# https://github.com/Unitech/pm2/issues/5045
+RUN apk --no-cache add procps
+
 # make node_modules cached.
 # Src: https://nodesource.com/blog/8-protips-to-start-killing-it-when-dockerizing-node-js/
 #
