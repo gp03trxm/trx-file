@@ -1,5 +1,5 @@
 : ${VERSION="44"}
-: ${HOSTS="file.vnpay.io file.trxm.cc"}
+: ${HOSTS="file.vnpay.io"}
 
 # convert string to array by space
 HOSTS=($HOSTS)
