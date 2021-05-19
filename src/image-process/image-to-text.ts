@@ -5,8 +5,9 @@ import {
   IImageToTextTaskResult,
   IGetTaskResultResponse,
 } from 'anticaptcha';
+import { ANTI_CAPTCHA_KEY } from '../constants';
 
-const anticaptcha = new AntiCaptcha('9adab5302326cf6f36244161b51b6887');
+const anticaptcha = new AntiCaptcha(ANTI_CAPTCHA_KEY);
 
 async function getTextCore(
   dataBase64: string,
