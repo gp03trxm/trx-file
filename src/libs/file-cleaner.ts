@@ -30,7 +30,8 @@ const run = async (dirName = 'uploads') => {
     }
 
     const diff = +now - +stat.atime;
-    if (diff >= 1000 * 60 * 60 * 24) {
+    // TTL: 8 hours
+    if (diff >= 1000 * 60 * 60 * 8) {
       console.log('[filter-cleaner] delete file', f);
       fs.unlinkSync(fileWithDir);
     }
