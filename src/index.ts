@@ -14,6 +14,8 @@ import { OcrResult, Response, TrxFileRequest } from './types';
 import { serializeError } from 'serialize-error';
 import fileCleaner from './libs/file-cleaner';
 
+const pkg = require('../package.json');
+
 require('./libs/console-override');
 
 const db = low(new FileSync('db.json'));
@@ -30,6 +32,7 @@ app.get('/', (req, res) => {
     info: 'trx file server',
     headers: req.headers,
     url: req.url,
+    version: pkg.version,
   });
 });
 
