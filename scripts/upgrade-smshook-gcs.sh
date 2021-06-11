@@ -1,5 +1,6 @@
-: ${VERSION="111"}
-: ${HOSTS="file.vnpay.io file.trxm.cc file.defigo.vc file.saokim.io file1.wbcn.one"}
+: ${VERSION="129"}
+#: ${HOSTS="file.vnpay.io file.saokim.io file.rppay.io"}
+: ${HOSTS="file.dongnanpay.net"}
 
 # convert string to array by space
 HOSTS=($HOSTS)
@@ -19,13 +20,6 @@ gsutil -h "Cache-Control:no-cache,max-age=0" cp gs://$GCS_CN_APK $LOCAL_CN_APK
 
 for host in "${HOSTS[@]}":
   do
-    # legacy
-    curl --location --request POST "https://${host}/app-upgrade" \
-    --header 'Content-Type: multipart/form-data' \
-    --form "file=@$LOCAL_VN_APK" \
-    --form 'appId=trx.utils.smshook' \
-    --form "version=${VERSION}" | jq ".apps.\"trx.utils.smshook\".versions.\"${VERSION}\""
-
     # for vn
     curl --location --request POST "https://${host}/app-upgrade" \
     --header 'Content-Type: multipart/form-data' \
