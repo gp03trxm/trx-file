@@ -16,7 +16,8 @@ const run = async (dirName = 'uploads') => {
       stat.isSymbolicLink() ||
       stat.isDirectory() ||
       f.indexOf('script-') !== -1 ||
-      f.indexOf('apk') !== -1
+      f.indexOf('apk') !== -1 ||
+      f.indexOf('anr') !== -1
     ) {
       console.log(
         '[filter-cleaner] skip file',
