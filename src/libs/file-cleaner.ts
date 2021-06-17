@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { isImportantFile } from './utils';
 
 const run = async (dirName = 'uploads') => {
   console.log('[filter-cleaner] run at dir:', dirName);
@@ -15,9 +16,7 @@ const run = async (dirName = 'uploads') => {
       !stat.isFile() ||
       stat.isSymbolicLink() ||
       stat.isDirectory() ||
-      f.indexOf('script-') !== -1 ||
-      f.indexOf('apk') !== -1 ||
-      f.indexOf('anr') !== -1
+      isImportantFile(f)
     ) {
       console.log(
         '[filter-cleaner] skip file',
