@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/storage": "^5.8.0",
-    "@trx/trx-captcha": "^1.0.0",
+    "@trx/trx-captcha": "^1.0.1",
     "@types/node-fetch": "^2.5.5",
     "@types/sharp": "^0.24.0",
     "anticaptcha": "^2.0.3",
@@ -45,5 +45,8 @@
     "prettier": "^2.2.1",
     "tslint": "^6.0.0",
     "typescript": "^3.8.3"
+  },
+  "engines": {
+    "node": "12.22.1"
   }
 }
