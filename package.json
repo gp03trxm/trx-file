@@ -1,7 +1,7 @@
 {
   "name": "trx-file",
   "version": "1.0.18",
-  "description": "",
+  "description": "trx file",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/storage": "^5.8.0",
+    "@trx/trx-captcha": "^1.0.0",
     "@types/node-fetch": "^2.5.5",
     "@types/sharp": "^0.24.0",
     "anticaptcha": "^2.0.3",
