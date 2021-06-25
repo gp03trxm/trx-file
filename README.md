@@ -18,7 +18,7 @@ curl --location --request POST 'http://localhost:3005/files?origin=1&preifx=scre
 --form 'userId=b092bd4d' | jq
 ```
 
-## Use OCR
+## Use OCR (deprecated)
 
 ```bash
 curl --location --request POST 'http://localhost:3005/ocr' \
@@ -35,6 +35,45 @@ curl --location --request POST 'http://localhost:3005/ocr' \
 --form 'height=250' \
 --form 'left=0' \
 --form 'top=1110' | jq
+```
+
+## Use captcha
+
+```bash
+curl --location --request POST 'http://localhost:3005/captcha' \
+--header 'Content-Type: multipart/form-data' \
+--form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/croppedImage.jpg' | jq
+```
+
+```JSON
+{
+  "createdAt": "2021-06-25T10:40:51.211Z",
+  "body": {},
+  "query": {},
+  "file": {
+    "fieldname": "file",
+    "originalname": "croppedImage.jpg",
+    "encoding": "7bit",
+    "mimetype": "image/jpeg",
+    "destination": "uploads",
+    "filename": "1208a6dd-e03e-493c-8ef6-5c4c29e58ec2.jpg",
+    "path": "uploads/1208a6dd-e03e-493c-8ef6-5c4c29e58ec2.jpg",
+    "size": 14904
+  },
+  "url": {
+    "file": "http://localhost:3005/files/1208a6dd-e03e-493c-8ef6-5c4c29e58ec2.jpg",
+    "config": "http://localhost:3005/files/1208a6dd-e03e-493c-8ef6-5c4c29e58ec2.jpg.json"
+  },
+  "captcha": {
+    "text": "3594187206",
+    "timeSpent": 1444,
+    "agent": "captchaGuru",
+    "agentResult": {
+      "status": 1,
+      "request": "3594187206"
+    }
+  }
+}
 ```
 
 ## Upgrade apk

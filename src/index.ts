@@ -13,6 +13,7 @@ import { getNumber } from './image-process/ocr';
 import { OcrResult, Response, TrxFileRequest } from './types';
 import { serializeError } from 'serialize-error';
 import fileCleaner from './libs/file-cleaner';
+import trxCaptcha from '@trx/trx-captcha';
 
 const pkg = require('../package.json');
 
@@ -78,6 +79,17 @@ app.post(
   function (req: TrxFileRequest, res) {
     console.log('[POST /files]', req.body);
     res.json(req.fileConfig);
+  },
+);
+
+app.post(
+  '/captcha',
+  uploadMiddleware,
+  fileConfigMiddleware,
+  async function (req: TrxFileRequest, res) {
+    console.log('[POST /captcha]', req.body);
+    const result = await trxCaptcha(req.fileConfig?.url.file!);
+    res.json({ ...req.fileConfig, captcha: result });
   },
 );
 
