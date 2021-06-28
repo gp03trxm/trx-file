@@ -28,6 +28,9 @@ export type FileConfig = {
   };
 };
 
+/**
+ * @deprecated
+ */
 export type OcrResult = {
   croppedFileInfo: OutputInfo;
   croppedFilename: string;
@@ -35,6 +38,13 @@ export type OcrResult = {
   spentTime: number;
   anticaptchaResult: IGetTaskResultResponse<IImageToTextTaskResult>;
   method: 'get-number'; // and other future methods
+};
+
+export type CropResult = {
+  croppedFileInfo: OutputInfo;
+  croppedFilename: string;
+  base64: string;
+  spentTime: number;
 };
 
 export declare namespace Response {

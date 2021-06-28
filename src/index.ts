@@ -9,8 +9,8 @@ import sharp from 'sharp';
 import { destination, HTTP_PORT, SCHEDULER_API } from './constants';
 import { download, fileExists, init as gcsInit } from './libs/gcs';
 import { fileConfigMiddleware, uploadMiddleware } from './middlewares';
-import { getNumber } from './image-process/ocr';
-import { OcrResult, Response, TrxFileRequest } from './types';
+import crop from './image-process/crop';
+import { TrxFileRequest } from './types';
 import { serializeError } from 'serialize-error';
 import fileCleaner from './libs/file-cleaner';
 import trxCaptcha from '@trx/trx-captcha';
@@ -102,14 +102,13 @@ app.post(
   fileConfigMiddleware,
   async function (req: TrxFileRequest, res) {
     console.log('[POST /ocr]', req.body);
-    const { method = 'get-number', width, height, left, top } = req.body;
+    const { width, height, left, top } = req.body;
 
     const {
       file: { filename },
       fileConfig,
       fileConfigPath,
     } = req;
-    let ocrResult: OcrResult | undefined = undefined;
     let region: sharp.Region = { width: 1080, height: 165, left: 0, top: 1110 };
 
     if (!isNaN(width) && !isNaN(height) && !isNaN(left) && !isNaN(top)) {
@@ -123,16 +122,24 @@ app.post(
 
     console.log('[POST /ocr] region: ', region);
 
-    if (method === 'get-number' && fileConfig && fileConfigPath) {
+    if (fileConfig && fileConfigPath) {
       try {
-        ocrResult = await getNumber(destination, filename, region);
-        const data: Response.Ocr = { ...fileConfig, ocrResult };
+        const { base64, ...cropMetadata } = await crop(
+          destination,
+          filename,
+          region,
+        );
+        const captcha = await trxCaptcha(base64, {
+          dataType: 'base64',
+          algorithm: 'basic',
+        });
+        const result = { ...cropMetadata, captcha };
 
         // overwrite the file config
-        fs.writeFileSync(fileConfigPath, JSON.stringify(data, null, 2));
+        fs.writeFileSync(fileConfigPath, JSON.stringify(result, null, 2));
 
-        console.log('[POST /ocr] result = ', data);
-        res.json(data);
+        console.log('[POST /ocr] result = ', captcha);
+        res.json(result);
       } catch (error) {
         console.error('[POST /ocr] error = ', error);
         res.status(500).json({
@@ -141,7 +148,9 @@ app.post(
       }
     } else {
       res.status(500).json({
-        error: { message: `wrong OCR method: ${method}` },
+        error: {
+          message: `wrong fileConfig (${fileConfig}) or fileConfigPath (${fileConfigPath})`,
+        },
       });
     }
   },

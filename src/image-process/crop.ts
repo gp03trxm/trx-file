@@ -1,42 +1,36 @@
 import sharp, { OutputInfo } from 'sharp';
-import { getTextFromBase64 } from './image-to-text';
-import { OcrResult } from '../types';
-import { IImageToTextTaskResult, IGetTaskResultResponse } from 'anticaptcha';
+import { CropResult } from '../types';
 
-export const getNumber = async (
+export default async function crop(
   destination: string,
   filename: string,
   region: sharp.Region,
-): Promise<OcrResult> => {
+): Promise<CropResult> {
   const ocrStartTime = +new Date();
   const croppedFilename =
     filename.substr(0, filename.lastIndexOf('.')) + '_cropped.jpg';
   const filePath = `${destination}/${filename}`;
   const croppedFilePath = `${destination}/${croppedFilename}`;
 
-  const promises: Promise<
-    OutputInfo | IGetTaskResultResponse<IImageToTextTaskResult> | void
-  >[] = [
+  const promises: Promise<OutputInfo | string | void>[] = [
     sharp(filePath).extract(region).toFile(croppedFilePath),
     sharp(filePath)
       .extract(region)
       .toBuffer()
       .then(async data => {
-        return getTextFromBase64(data.toString('base64'));
+        return data.toString('base64');
       }),
   ];
 
   const res = await Promise.all(promises);
 
   const croppedFileInfo = res[0] as OutputInfo;
-  const anticaptchaResult = res[1] as IGetTaskResultResponse<IImageToTextTaskResult>;
+  const base64 = res[1] as string;
 
   return {
     croppedFileInfo,
     croppedFilename,
-    anticaptchaResult,
-    text: anticaptchaResult?.solution?.text,
+    base64,
     spentTime: +new Date() - ocrStartTime,
-    method: 'get-number',
   };
-};
+}
