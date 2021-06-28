@@ -88,7 +88,10 @@ app.post(
   fileConfigMiddleware,
   async function (req: TrxFileRequest, res) {
     console.log('[POST /captcha]', req.body);
-    const result = await trxCaptcha(req.fileConfig?.url.file!);
+    const result = await trxCaptcha(req.fileConfig?.url.file!, {
+      dataType: 'url',
+      algorithm: 'basic',
+    });
     res.json({ ...req.fileConfig, captcha: result });
   },
 );
