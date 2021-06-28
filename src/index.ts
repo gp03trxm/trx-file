@@ -14,6 +14,7 @@ import { TrxFileRequest } from './types';
 import { serializeError } from 'serialize-error';
 import fileCleaner from './libs/file-cleaner';
 import trxCaptcha from '@trx/trx-captcha';
+import { errorToJson } from './libs/utils';
 
 const pkg = require('../package.json');
 
@@ -88,11 +89,16 @@ app.post(
   fileConfigMiddleware,
   async function (req: TrxFileRequest, res) {
     console.log('[POST /captcha]', req.body);
-    const result = await trxCaptcha(req.fileConfig?.url.file!, {
-      dataType: 'url',
-      algorithm: 'basic',
-    });
-    res.json({ ...req.fileConfig, captcha: result });
+    try {
+      const result = await trxCaptcha(req.fileConfig?.url.file!, {
+        dataType: 'url',
+        algorithm: req.body.algorithm ?? 'basic',
+      });
+      res.json({ ...req.fileConfig, captcha: result });
+    } catch (error) {
+      console.error(error);
+      res.json({ error: errorToJson(error) });
+    }
   },
 );
 
@@ -102,7 +108,7 @@ app.post(
   fileConfigMiddleware,
   async function (req: TrxFileRequest, res) {
     console.log('[POST /captcha-crop]', req.body);
-    const { width, height, left, top } = req.body;
+    const { width, height, left, top, algorithm } = req.body;
 
     const {
       file: { filename },
@@ -131,7 +137,7 @@ app.post(
         );
         const captcha = await trxCaptcha(base64, {
           dataType: 'base64',
-          algorithm: 'basic',
+          algorithm: algorithm ?? 'basic',
         });
         const result = { ...cropMetadata, captcha };
 
