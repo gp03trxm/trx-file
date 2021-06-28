@@ -5,8 +5,8 @@
 ```bash
 curl --location --request POST 'http://localhost:3005/files' \
 --header 'Content-Type: multipart/form-data' \
---form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/screenshot.png' \
---form 'userId=b092bd4d' | jq
+--form "file=@`pwd`/testdata/screenshot.png" \
+--form 'workerId=b092bd4d' | jq
 ```
 
 ## With parameters
@@ -14,8 +14,8 @@ curl --location --request POST 'http://localhost:3005/files' \
 ```bash
 curl --location --request POST 'http://localhost:3005/files?origin=1&preifx=screenshot-' \
 --header 'Content-Type: multipart/form-data' \
---form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/screenshot.png' \
---form 'userId=b092bd4d' | jq
+--form "file=@`pwd`/testdata/screenshot.png" \
+--form 'workerId=b092bd4d' | jq
 ```
 
 ## Use OCR (deprecated)
@@ -23,14 +23,15 @@ curl --location --request POST 'http://localhost:3005/files?origin=1&preifx=scre
 ```bash
 curl --location --request POST 'http://localhost:3005/ocr' \
 --header 'Content-Type: multipart/form-data' \
---form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/screenshot.png' \
---form 'userId=b092bd4d' | jq
+--form "file=@`pwd`/testdata/screenshot.png" \
+--form 'workerId=b092bd4d' | jq
 ```
 
 ```bash
 curl --location --request POST 'http://localhost:3005/ocr' \
 --header 'Content-Type: multipart/form-data' \
---form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/screenshot.png' \
+--form "file=@`pwd`/testdata/screenshot.png" \
+--form 'algorithm=basic' \
 --form 'width=1080' \
 --form 'height=250' \
 --form 'left=0' \
@@ -40,21 +41,23 @@ curl --location --request POST 'http://localhost:3005/ocr' \
 ## Use captcha-crop
 
 ```bash
-curl --location --request POST 'http://localhost:3005/captcha-crop' \
---header 'Content-Type: multipart/form-data' \
---form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/screenshot.png' \
---form 'width=1080' \
---form 'height=250' \
---form 'left=0' \
---form 'top=1110' | jq
+curl --location --request POST "http://localhost:3005/captcha-crop" \
+--header "Content-Type: multipart/form-data" \
+--form "file=@`pwd`/testdata/screenshot.png" \
+--form "algorithm=basic" \
+--form "width=1080" \
+--form "height=250" \
+--form "left=0" \
+--form "top=1110" | jq
 ```
 
 ## Use captcha
 
 ```bash
-curl --location --request POST 'http://localhost:3005/captcha' \
---header 'Content-Type: multipart/form-data' \
---form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/croppedImage.jpg' | jq
+curl --location --request POST "http://localhost:3005/captcha" \
+--header "Content-Type: multipart/form-data" \
+--form "algorithm=basic" \
+--form "file=@`pwd`/testdata/croppedImage.jpg" | jq
 ```
 
 ```JSON
