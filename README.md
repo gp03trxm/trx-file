@@ -37,6 +37,18 @@ curl --location --request POST 'http://localhost:3005/ocr' \
 --form 'top=1110' | jq
 ```
 
+## Use captcha-crop
+
+```bash
+curl --location --request POST 'http://localhost:3005/captcha-crop' \
+--header 'Content-Type: multipart/form-data' \
+--form 'file=@/Users/ggm/Developer/tokamaklabs/trx-file/testdata/screenshot.png' \
+--form 'width=1080' \
+--form 'height=250' \
+--form 'left=0' \
+--form 'top=1110' | jq
+```
+
 ## Use captcha
 
 ```bash

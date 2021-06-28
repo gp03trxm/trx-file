@@ -97,11 +97,11 @@ app.post(
 );
 
 app.post(
-  '/ocr',
+  ['/captcha-crop', '/ocr'],
   uploadMiddleware,
   fileConfigMiddleware,
   async function (req: TrxFileRequest, res) {
-    console.log('[POST /ocr]', req.body);
+    console.log('[POST /captcha-crop]', req.body);
     const { width, height, left, top } = req.body;
 
     const {
