@@ -18,6 +18,16 @@ curl --location --request POST 'http://localhost:3005/files?origin=1&preifx=scre
 --form 'workerId=b092bd4d' | jq
 ```
 
+## Upload captcha file
+
+```bash
+curl --location --request POST 'http://localhost:3005/files' \
+--header 'Content-Type: multipart/form-data' \
+--form "file=@`pwd`/testdata/screenshot.png" \
+--form 'answer=yd51' \
+--form 'captcha=1' | jq
+```
+
 ## Use OCR (deprecated)
 
 ```bash

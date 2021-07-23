@@ -60,12 +60,13 @@ export const fileConfigMiddleware = (
       config: 'http://' + req.headers.host + `/files/${filename}.json`,
     },
   };
+  const { captcha } = body;
 
   const fileConfigPath = `${destination}/${filename}.json`;
   fs.writeFileSync(fileConfigPath, JSON.stringify(fileConfig, null, 2));
   Object.assign(req, { fileConfig, fileConfigPath });
 
-  gcsCp(`${destination}/${filename}`, `uploads/${filename}`)
+  gcsCp(`${destination}/${filename}`, `uploads/${filename}`, { captcha })
     .then(() => {
       console.log(`[fileConfigMiddleware] gcs uploaded ${filename}`);
       if (!isImportantFile(filename)) {
@@ -77,7 +78,7 @@ export const fileConfigMiddleware = (
     })
     .catch(console.error);
 
-  gcsCp(fileConfigPath, `uploads/${filename}.json`)
+  gcsCp(fileConfigPath, `uploads/${filename}.json`, { captcha })
     .then(() => {
       console.log(`[fileConfigMiddleware] gcs uploaded ${filename}.json`);
       if (!isImportantFile(filename)) {
