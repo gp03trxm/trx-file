@@ -1,4 +1,5 @@
 import { Storage } from '@google-cloud/storage';
+import { SITE_NAME } from '../constants';
 
 const keyFilename = process.cwd() + '/gcp-service-key.json';
 const storage = new Storage({
@@ -6,8 +7,7 @@ const storage = new Storage({
   keyFilename,
 });
 
-const shortLivedBucket =
-  'trx-file-anonymous-' + (process.env.SITE_NAME || 'vnpay');
+const shortLivedBucket = 'trx-file-anonymous-' + (SITE_NAME || 'vnpay');
 const captchaBucket = 'trx-file-captcha';
 
 export async function init() {

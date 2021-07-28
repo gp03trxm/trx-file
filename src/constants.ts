@@ -8,3 +8,5 @@ export const SCHEDULER_API =
 // old 9adab5302326cf6f36244161b51b6887
 export const ANTI_CAPTCHA_KEY =
   process.env.ANTI_CAPTCHA_KEY ?? '6bee4786e70fdeb2284c9ebef8220298';
+
+export const SITE_NAME = process.env.SITE_NAME ?? 'trxm';
