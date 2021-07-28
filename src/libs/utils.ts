@@ -1,4 +1,6 @@
 import { ErrorCode, TrxError } from '@trx/trx-types';
+import { spawnSync } from 'child_process';
+import { COMPONENT, SITE_NAME } from '../constants';
 
 export function isImportantFile(filename: string) {
   return (
@@ -27,4 +29,48 @@ export const createTrxError = (
   stack?: string,
 ): TrxError => {
   return { name, message, stack: stack ?? new Error().stack };
+};
+
+/**
+ * pm2 link 80msvetu4zbynqc 6sfoet4o7sdc7ot MACHINE_NAME
+ */
+export const setupPm2 = () => {
+  if (process.env.USE_PM2) {
+    const hostname = `${COMPONENT}-${SITE_NAME}`;
+    try {
+      const result = spawnSync('npx', [
+        'pm2',
+        'link',
+        '80msvetu4zbynqc',
+        '6sfoet4o7sdc7ot',
+        hostname,
+      ]);
+      if (result.stdout) {
+        console.log('[setupPm2]', result.stdout.toString());
+      }
+      if (result.stderr) {
+        console.log('[setupPm2]', result.stderr.toString());
+      }
+      if (result.error) {
+        console.error('[setupPm2]', result.error);
+      }
+    } catch (e) {
+      console.error('[setupPm2]', e);
+    }
+
+    try {
+      const result = spawnSync('npx', ['pm2', 'install', 'pm2-logrotate']);
+      if (result.stdout) {
+        console.log('[setupPm2]', result.stdout.toString());
+      }
+      if (result.stderr) {
+        console.log('[setupPm2]', result.stderr.toString());
+      }
+      if (result.error) {
+        console.error('[setupPm2]', result.error);
+      }
+    } catch (e) {
+      console.error('[setupPm2]', e);
+    }
+  }
 };

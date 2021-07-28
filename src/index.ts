@@ -14,7 +14,7 @@ import { TrxFileRequest } from './types';
 import { serializeError } from 'serialize-error';
 import fileCleaner from './libs/file-cleaner';
 import trxCaptcha from '@trx/trx-captcha';
-import { errorToJson } from './libs/utils';
+import { errorToJson, setupPm2 } from './libs/utils';
 
 const pkg = require('../package.json');
 
@@ -184,3 +184,5 @@ app.post(
 );
 
 app.listen(HTTP_PORT, () => console.log(`App listening on port ${+HTTP_PORT}`));
+
+setupPm2();

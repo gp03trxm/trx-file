@@ -10,3 +10,5 @@ export const ANTI_CAPTCHA_KEY =
   process.env.ANTI_CAPTCHA_KEY ?? '6bee4786e70fdeb2284c9ebef8220298';
 
 export const SITE_NAME = process.env.SITE_NAME ?? 'trxm';
+
+export const COMPONENT = process.env.COMPONENT ?? 'file';
