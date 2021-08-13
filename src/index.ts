@@ -13,7 +13,7 @@ import crop from './image-process/crop';
 import { TrxFileRequest } from './types';
 import { serializeError } from 'serialize-error';
 import fileCleaner from './libs/file-cleaner';
-import trxCaptcha from '@trx/trx-captcha';
+import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
 import { errorToJson, setupPm2 } from './libs/utils';
 
 const pkg = require('../package.json');
@@ -108,7 +108,9 @@ app.post(
   fileConfigMiddleware,
   async function (req: TrxFileRequest, res) {
     console.log('[POST /captcha-crop]', req.body);
-    const { width, height, left, top, algorithm } = req.body;
+    const body = JSON.parse(req.body.bodyString ?? '{}');
+    const { width, height, left, top } = body;
+    const captchaConfig = body.captchaConfig as TrxCaptchaConfig;
 
     const {
       file: { filename },
@@ -136,8 +138,8 @@ app.post(
           region,
         );
         const captcha = await trxCaptcha(base64, {
+          ...captchaConfig,
           dataType: 'base64',
-          algorithm: algorithm ?? 'basic',
         });
         const result = { ...cropMetadata, captcha };
 

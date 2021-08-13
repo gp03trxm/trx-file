@@ -51,14 +51,11 @@ curl --location --request POST 'http://localhost:3005/ocr' \
 ## Use captcha-crop
 
 ```bash
+c=`cat testdata/data-vcb-1.json`
 curl --location --request POST "http://localhost:3005/captcha-crop" \
 --header "Content-Type: multipart/form-data" \
---form "file=@`pwd`/testdata/screenshot.png" \
---form "algorithm=basic" \
---form "width=1080" \
---form "height=250" \
---form "left=0" \
---form "top=1110" | jq
+--form "file=@`pwd`/testdata/data-vcb-raw-1.png" \
+--form "bodyString=$c" | jq
 ```
 
 ## Use captcha
