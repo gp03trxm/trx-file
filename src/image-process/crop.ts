@@ -1,4 +1,6 @@
+import fs from 'fs';
 import sharp, { OutputInfo } from 'sharp';
+import { cp as gcsCp } from '../libs/gcs';
 import { CropResult } from '../types';
 
 export default async function crop(
@@ -26,6 +28,14 @@ export default async function crop(
 
   const croppedFileInfo = res[0] as OutputInfo;
   const base64 = res[1] as string;
+
+  gcsCp(croppedFilePath, `uploads/${filename}`, { captcha: true })
+    .then(() => {
+      console.log(`[fileConfigMiddleware] gcs uploaded ${filename}`);
+      console.log(`[fileConfigMiddleware] deleted ${croppedFilePath}`);
+      fs.unlinkSync(croppedFilePath);
+    })
+    .catch(console.error);
 
   return {
     croppedFileInfo,
