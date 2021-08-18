@@ -9,7 +9,7 @@
     "clean": "rm -rf dist *.tsbuildinfo",
     "test": "echo pass",
     "start": "npm run build && node -r dotenv/config dist/index.js",
-    "start:dev": "npm run build:watch & nodemon --watch dist dist/index.js",
+    "start:dev": "npm run build:watch & nodemon -r source-map-support/register --watch dist dist/index.js",
     "start:pm2": "npm run build && pm2 startOrReload ecosystem.config.js --env production --update-env",
     "start:pm2:docker": "npm run build && pm2 startOrReload ecosystem.config.js --no-daemon --env production --update-env",
     "upload:smshook": "./scripts/upgrade-smshook.sh"
@@ -27,9 +27,10 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "formidable": "^1.2.2",
     "lodash": "^4.17.21",
     "lowdb": "^2.1.0",
-    "multer": "^1.4.2",
+    "multer": "^1.4.3",
     "node-fetch": "^2.6.0",
     "pm2": "^4.2.3",
     "qrcode": "^1.4.4",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.9",
     "@types/express": "^4.17.2",
+    "@types/formidable": "^1.2.3",
     "@types/lowdb": "^1.0.9",
     "@types/multer": "^1.4.2",
     "@types/uuid": "^7.0.0",
