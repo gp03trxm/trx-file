@@ -2,10 +2,10 @@ import express from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import { v4 as uuid } from 'uuid';
-import { FileConfig } from '../types';
-import { destination } from '../constants';
-import { cp as gcsCp } from '../libs/gcs';
-import { isImportantFile } from '../libs/utils';
+import { FileConfig } from '../types.js';
+import { destination } from '../constants.js';
+import { cp as gcsCp } from '../libs/gcs.js';
+import { isImportantFile } from '../libs/utils.js';
 
 const splitExtension = (name: String) => {
   const index = name.lastIndexOf('.');

@@ -1,6 +1,6 @@
 import { ErrorCode, TrxError } from '@trx/trx-types';
 import { spawnSync } from 'child_process';
-import { COMPONENT, SITE_NAME } from '../constants';
+import { COMPONENT, SITE_NAME } from '../constants.js';
 import io from '@pm2/io';
 
 export function isImportantFile(filename: string) {

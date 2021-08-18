@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { isImportantFile } from './utils';
+import { isImportantFile } from './utils.js';
 
 const run = async (dirName = 'uploads') => {
   console.log('[filter-cleaner] run at dir:', dirName);

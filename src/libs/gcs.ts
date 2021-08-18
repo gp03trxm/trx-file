@@ -1,5 +1,5 @@
 import { Storage } from '@google-cloud/storage';
-import { SITE_NAME } from '../constants';
+import { SITE_NAME } from '../constants.js';
 
 const keyFilename = process.cwd() + '/gcp-service-key.json';
 const storage = new Storage({

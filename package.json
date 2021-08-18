@@ -2,7 +2,7 @@
   "name": "trx-file",
   "version": "1.0.24",
   "description": "trx file",
-  "main": "index.js",
+  "export": "index.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
@@ -48,6 +48,7 @@
     "tslint": "^6.0.0",
     "typescript": "^3.8.3"
   },
+  "type": "module",
   "engines": {
     "node": "12.22.1"
   }

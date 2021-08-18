@@ -1,7 +1,7 @@
 import fs from 'fs';
 import sharp, { OutputInfo } from 'sharp';
-import { cp as gcsCp } from '../libs/gcs';
-import { CropResult } from '../types';
+import { cp as gcsCp } from '../libs/gcs.js';
+import { CropResult } from '../types.js';
 
 export default async function crop(
   destination: string,

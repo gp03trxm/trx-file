@@ -2,23 +2,22 @@ import _ from 'lodash';
 import cors from 'cors';
 import express from 'express';
 import fetch from 'node-fetch';
-import FileSync from 'lowdb/adapters/FileSync';
 import fs from 'fs';
 import low from 'lowdb';
 import sharp from 'sharp';
-import { destination, HTTP_PORT, SCHEDULER_API } from './constants';
-import { download, fileExists, init as gcsInit } from './libs/gcs';
-import { fileConfigMiddleware, uploadMiddleware } from './middlewares';
-import crop from './image-process/crop';
-import { TrxFileRequest } from './types';
+import { destination, HTTP_PORT, SCHEDULER_API } from './constants.js';
+import { download, fileExists, init as gcsInit } from './libs/gcs.js';
+import { fileConfigMiddleware, uploadMiddleware } from './middlewares/index.js';
+import crop from './image-process/crop.js';
+import { TrxFileRequest } from './types.js';
 import { serializeError } from 'serialize-error';
-import fileCleaner from './libs/file-cleaner';
+import fileCleaner from './libs/file-cleaner.js';
 import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
-import { errorToJson, setupPm2 } from './libs/utils';
+import { errorToJson, setupPm2 } from './libs/utils.js';
 
-const pkg = require('../package.json');
+import './libs/console-override.js';
 
-require('./libs/console-override');
+type Data = { retrievedFiles: any[]; uploadFiles: number };
 
 const db = low(new FileSync('db.json'));
 db.defaults({ retrievedFiles: [] }).write();
@@ -34,12 +33,12 @@ app.get('/', (req, res) => {
     info: 'trx file server',
     headers: req.headers,
     url: req.url,
-    version: pkg.version,
+    version: process.env.version,
   });
 });
 
 app.get('/db', (req, res) => {
-  res.json(db.getState());
+  res.json(db.data);
 });
 
 app.get('/db/:key', (req, res) => {
