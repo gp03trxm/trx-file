@@ -6,6 +6,7 @@ import { FileConfig } from '../types.js';
 import { destination } from '../constants.js';
 import { cp as gcsCp } from '../libs/gcs.js';
 import { isImportantFile } from '../libs/utils.js';
+import db from '../libs/db.js';
 
 const splitExtension = (name: String) => {
   const index = name.lastIndexOf('.');
@@ -47,6 +48,9 @@ export const fileConfigMiddleware = (
   if (!req.file) {
     return res.json({ error: { message: 'req.file is null' } });
   }
+
+  db.data!.uploadFiles++;
+  db.write();
 
   const { query, body, file } = req;
   const { filename } = file;

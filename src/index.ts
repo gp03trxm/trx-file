@@ -3,7 +3,6 @@ import cors from 'cors';
 import express from 'express';
 import fetch from 'node-fetch';
 import fs from 'fs';
-import { LowSync, JSONFileSync } from 'lowdb';
 import sharp from 'sharp';
 import { destination, HTTP_PORT, SCHEDULER_API } from './constants.js';
 import { download, fileExists, init as gcsInit } from './libs/gcs.js';
@@ -14,16 +13,9 @@ import { serializeError } from 'serialize-error';
 import fileCleaner from './libs/file-cleaner.js';
 import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
 import { errorToJson, setupPm2 } from './libs/utils.js';
+import db from './libs/db.js';
 
 import './libs/console-override.js';
-
-type Data = { retrievedFiles: any[]; uploadFiles: number };
-
-const db = new LowSync<Data>(new JSONFileSync<Data>('db.json'));
-db.data = db.data ?? {
-  retrievedFiles: [],
-  uploadFiles: 0,
-};
 
 gcsInit().catch(console.error);
 fileCleaner.startAsService().catch(console.error);
