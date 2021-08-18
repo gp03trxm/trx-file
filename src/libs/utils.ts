@@ -3,11 +3,7 @@ import { spawnSync } from 'child_process';
 import { COMPONENT, SITE_NAME } from '../constants';
 
 export function isImportantFile(filename: string) {
-  return (
-    filename.indexOf('script-') !== -1 ||
-    filename.indexOf('apk') !== -1 ||
-    filename.indexOf('anr') !== -1
-  );
+  return filename.indexOf('script-') !== -1 || filename.indexOf('apk') !== -1;
 }
 
 /**
