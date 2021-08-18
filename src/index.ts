@@ -1,21 +1,24 @@
 import _ from 'lodash';
 import cors from 'cors';
+import crop from './image-process/crop.js';
+import db from './libs/db.js';
 import express from 'express';
 import fetch from 'node-fetch';
+import fileCleaner from './libs/file-cleaner.js';
 import fs from 'fs';
 import sharp from 'sharp';
+import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
 import { destination, HTTP_PORT, SCHEDULER_API } from './constants.js';
 import { download, fileExists, init as gcsInit } from './libs/gcs.js';
-import { fileConfigMiddleware, uploadMiddleware } from './middlewares/index.js';
-import crop from './image-process/crop.js';
-import { TrxFileRequest } from './types.js';
-import { serializeError } from 'serialize-error';
-import fileCleaner from './libs/file-cleaner.js';
-import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
 import { errorToJson, setupPm2 } from './libs/utils.js';
-import db from './libs/db.js';
-
+import { serializeError } from 'serialize-error';
+import { TrxFileRequest } from './types.js';
 import './libs/console-override.js';
+import {
+  uploadFileFormidable,
+  fileConfigMiddleware,
+  uploadMiddleware,
+} from './middlewares/index.js';
 
 gcsInit().catch(console.error);
 fileCleaner.startAsService().catch(console.error);
@@ -72,7 +75,7 @@ app.use('/files', express.static(destination), async (req, res, next) => {
 
 app.post(
   '/files',
-  uploadMiddleware,
+  uploadFileFormidable,
   fileConfigMiddleware,
   function (req: TrxFileRequest, res) {
     console.log('[POST /files]', req.body);

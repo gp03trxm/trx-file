@@ -7,6 +7,7 @@ import { destination } from '../constants.js';
 import { cp as gcsCp } from '../libs/gcs.js';
 import { isImportantFile } from '../libs/utils.js';
 import db from '../libs/db.js';
+import formidable, { File } from 'formidable';
 
 const splitExtension = (name: String) => {
   const index = name.lastIndexOf('.');
@@ -18,66 +19,90 @@ const splitExtension = (name: String) => {
   return { filename, extension };
 };
 
+const getFilename = (req: express.Request, originalname: string) => {
+  const { prefix = '', origin = false } = req.query;
+  console.log('[getFilename]', req.query, originalname);
+  if (origin) {
+    return `${prefix}${originalname}`;
+  } else {
+    const { extension } = splitExtension(originalname);
+    const filename = `${prefix}${uuid()}${extension}`;
+    return filename;
+  }
+};
+
 export const uploadMiddleware = multer({
   storage: multer.diskStorage({
     destination,
     filename: (req, file, cb) => {
-      const { prefix = '', origin = false } = req.query;
-      if (origin) {
-        const { originalname } = file;
-        cb(null, `${prefix}${originalname}`);
-      } else {
-        const { originalname } = file;
-        const { extension } = splitExtension(originalname);
-        const filename = `${prefix}${uuid()}${extension}`;
-        cb(null, filename);
-      }
+      cb(null, getFilename(req, file.originalname));
     },
   }),
 }).single('file');
 
-export const fileConfigMiddleware = (
+export const uploadFileFormidable = (
   req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const form = formidable({
+    multiples: true,
+    uploadDir: destination,
+    keepExtensions: true,
+  });
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      return next(err);
+    }
+    const file = files.file as File;
+    file.name = getFilename(req, file.name!);
+    Object.assign(req, { fileFormidable: file });
+    next();
+  });
+};
+
+export const fileConfigMiddleware = (
+  req: express.Request & { fileFormidable?: File },
   res: express.Response,
   next: express.NextFunction,
 ) => {
   // req.file is the `avatar` file
   // req.body will hold the text fields, if there were any
-  console.log('[fileConfigMiddleware][req.file]', req.file);
+  console.log('[fileConfigMiddleware][req.file]');
 
-  if (!req.file) {
+  if (!req.file && !req.fileFormidable) {
     return res.json({ error: { message: 'req.file is null' } });
   }
 
   db.data!.uploadFiles++;
   db.write();
 
-  const { query, body, file } = req;
-  const { filename } = file;
+  const { query, body, file, fileFormidable } = req;
+  const filename = file?.filename ?? fileFormidable?.name;
   const fileConfig: FileConfig = {
     createdAt: new Date().toISOString(),
     body,
     query,
-    file,
+    file: file ?? fileFormidable,
     url: {
       file: 'http://' + req.headers.host + `/files/${filename}`,
       config: 'http://' + req.headers.host + `/files/${filename}.json`,
     },
   };
-  const { captcha } = body;
+  const { captcha } = body ?? {};
 
   const fileConfigPath = `${destination}/${filename}.json`;
   fs.writeFileSync(fileConfigPath, JSON.stringify(fileConfig, null, 2));
   Object.assign(req, { fileConfig, fileConfigPath });
 
-  gcsCp(`${destination}/${filename}`, `uploads/${filename}`, { captcha })
+  const from = fileFormidable?.path ?? `${destination}/${filename}`;
+
+  gcsCp(from, `uploads/${filename}`, { captcha })
     .then(() => {
-      console.log(`[fileConfigMiddleware] gcs uploaded ${filename}`);
+      console.log(`[fileConfigMiddleware] gcs uploaded ${from}`);
       if (!isImportantFile(filename)) {
-        console.log(
-          `[fileConfigMiddleware] deleted ${destination}/${filename}`,
-        );
-        fs.unlinkSync(`${destination}/${filename}`);
+        console.log(`[fileConfigMiddleware] deleted ${from}`);
+        fs.unlinkSync(from);
       }
     })
     .catch(console.error);

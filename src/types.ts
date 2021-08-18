@@ -1,6 +1,7 @@
 import { OutputInfo } from 'sharp';
 import { Request } from 'express';
 import { IImageToTextTaskResult, IGetTaskResultResponse } from 'anticaptcha';
+import { File } from 'formidable';
 
 export type FileConfig = {
   createdAt: string;
@@ -12,16 +13,7 @@ export type FileConfig = {
     // tslint:disable-next-line: no-any
     [key in string]: any;
   };
-  file: {
-    fieldname: string;
-    originalname: string;
-    encoding: string;
-    mimetype: string;
-    destination: string;
-    filename: string;
-    path: string;
-    size: number;
-  };
+  file: Express.Multer.File | File;
   url: {
     file: string;
     config: string;
