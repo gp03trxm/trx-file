@@ -3,7 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import fetch from 'node-fetch';
 import fs from 'fs';
-import low from 'lowdb';
+import { LowSync, JSONFileSync } from 'lowdb';
 import sharp from 'sharp';
 import { destination, HTTP_PORT, SCHEDULER_API } from './constants.js';
 import { download, fileExists, init as gcsInit } from './libs/gcs.js';
@@ -19,8 +19,11 @@ import './libs/console-override.js';
 
 type Data = { retrievedFiles: any[]; uploadFiles: number };
 
-const db = low(new FileSync('db.json'));
-db.defaults({ retrievedFiles: [] }).write();
+const db = new LowSync<Data>(new JSONFileSync<Data>('db.json'));
+db.data = db.data ?? {
+  retrievedFiles: [],
+  uploadFiles: 0,
+};
 
 gcsInit().catch(console.error);
 fileCleaner.startAsService().catch(console.error);
@@ -42,7 +45,11 @@ app.get('/db', (req, res) => {
 });
 
 app.get('/db/:key', (req, res) => {
-  res.json(db.get(req.params.key).value());
+  const { key } = req.params;
+  if (key !== 'retrievedFiles' && key !== 'uploadFiles') {
+    return res.json({ error: { message: `key is invalid` } });
+  }
+  res.json(db.data?.[key]);
 });
 
 app.use('/files', express.static(destination), async (req, res, next) => {
@@ -57,9 +64,8 @@ app.use('/files', express.static(destination), async (req, res, next) => {
       console.log(`[GET /files${req.path}] download file from gcs`);
       const [fileMeta, headers] = await download(gcsFilename);
 
-      (db.get('retrievedFiles') as any)
-        .push(_.pick(fileMeta, 'name', 'size', 'updated'))
-        .write();
+      db.data?.retrievedFiles.push(_.pick(fileMeta, 'name', 'size', 'updated'));
+      db.write();
 
       res.redirect(req.originalUrl);
     } else {
