@@ -33,7 +33,7 @@
     "pm2": "^4.2.3",
     "qrcode": "^1.4.4",
     "serialize-error": "^8.0.1",
-    "sharp": "^0.25.1",
+    "sharp": "^0.29.0",
     "uuid": "^7.0.1"
   },
   "devDependencies": {
