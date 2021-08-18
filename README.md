@@ -115,3 +115,7 @@ To see [upgrade-smshook.sh](./scripts/upgrade-smshook.sh)
 ```bash
 VERSION=45 ./scripts/upgrade-smshook.sh
 ```
+
+## Pure ESM package
+
+<https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c>
