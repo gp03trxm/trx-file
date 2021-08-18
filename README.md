@@ -12,7 +12,7 @@ curl --location --request POST 'http://localhost:3005/files' \
 ## With parameters
 
 ```bash
-curl --location --request POST 'http://localhost:3005/files?origin=1&preifx=screenshot-' \
+curl --location --request POST 'http://localhost:3005/files?origin=1&prefix=worker-' \
 --header 'Content-Type: multipart/form-data' \
 --form "file=@`pwd`/testdata/screenshot.png" \
 --form 'workerId=b092bd4d' | jq
