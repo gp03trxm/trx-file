@@ -19,8 +19,8 @@
   "dependencies": {
     "@google-cloud/storage": "^5.8.0",
     "@pm2/io": "^4.3.3",
-    "@trx/trx-captcha": "^1.0.6",
-    "@trx/trx-log": "^1.0.10",
+    "@trx/trx-captcha": "^1.0.8",
+    "@trx/trx-log": "^1.0.11",
     "@trx/trx-types": "^2.0.52",
     "@types/node-fetch": "^2.5.5",
     "@types/sharp": "^0.24.0",
