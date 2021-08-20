@@ -85,6 +85,7 @@ export const fileConfigMiddleware = (
 
   db.data!.uploadFiles++;
   db.write();
+  ioMetric.uploadFiles.set(db.data!.uploadFiles);
 
   const { query, body, file, fileFormidable } = req;
   const filename = file?.filename ?? fileFormidable?.name;
