@@ -1,5 +1,5 @@
 # specify the node base image with your desired version node:<version>
-FROM node:12-alpine
+FROM node:14-alpine
 
 WORKDIR /home/node/app
 
