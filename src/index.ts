@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
     info: 'trx file server',
     headers: req.headers,
     url: req.url,
-    version: process.env.version,
+    version: process.env.npm_package_version,
   });
 });
 
