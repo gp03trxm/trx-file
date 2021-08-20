@@ -1,7 +1,7 @@
 import { ErrorCode, TrxError } from '@trx/trx-types';
 import { spawnSync } from 'child_process';
 import { COMPONENT, SITE_NAME } from '../constants.js';
-import io from '@pm2/io';
+import { init as ioInit } from './pm2-io.js';
 
 export function isImportantFile(filename: string) {
   return filename.indexOf('script-') !== -1 || filename.indexOf('apk') !== -1;
@@ -33,6 +33,8 @@ export const createTrxError = (
  */
 export const setupPm2 = () => {
   if (process.env.USE_PM2) {
+    ioInit();
+
     const hostname = `${COMPONENT}-${SITE_NAME}`;
     try {
       const result = spawnSync('npx', [
@@ -69,22 +71,5 @@ export const setupPm2 = () => {
     } catch (e) {
       console.error('[setupPm2]', e);
     }
-
-    io.init({
-      tracing: {
-        enabled: true,
-        // will add the actual queries made to database, false by default
-        detailedDatabasesCalls: true,
-        // if you want you can ignore some endpoint based on their path
-        ignoreIncomingPaths: [],
-        // same as above but used to match entire URLs
-        ignoreOutgoingUrls: [],
-        /**
-         * Determines the probability of a request to be traced. Ranges from 0.0 to 1.0
-         * default is 0.5
-         */
-        samplingRate: 0.5,
-      },
-    });
   }
 };
