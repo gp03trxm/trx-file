@@ -1,13 +1,15 @@
-import express from 'express';
-import multer from 'multer';
-import fs from 'fs';
-import { v4 as uuid } from 'uuid';
-import { FileConfig } from '../types.js';
-import { destination } from '../constants.js';
-import { cp as gcsCp } from '../libs/gcs.js';
-import { isImportantFile } from '../libs/utils.js';
 import db from '../libs/db.js';
+import express from 'express';
 import formidable, { File } from 'formidable';
+import fs from 'fs';
+import multer from 'multer';
+import trxConsole from '@trx/trx-log';
+import { cp as gcsCp } from '../libs/gcs.js';
+import { destination } from '../constants.js';
+import { FileConfig } from '../types.js';
+import { isImportantFile } from '../libs/utils.js';
+import { metric as ioMetric } from '../libs/pm2-io.js';
+import { v4 as uuid } from 'uuid';
 
 const splitExtension = (name: String) => {
   const index = name.lastIndexOf('.');
@@ -21,7 +23,6 @@ const splitExtension = (name: String) => {
 
 const getFilename = (req: express.Request, originalname: string) => {
   const { prefix = '', origin = false } = req.query;
-  console.log('[getFilename]', req.query, originalname);
   if (origin) {
     return `${prefix}${originalname}`;
   } else {
@@ -52,6 +53,14 @@ export const uploadFileFormidable = (
   });
   form.parse(req, (err, fields, files) => {
     if (err) {
+      trxConsole.error(err).scalyr({
+        func: 'uploadFileFormidable',
+        error: err,
+        message: err.message,
+        data: {
+          headers: req.headers,
+        },
+      });
       return next(err);
     }
     const file = files.file as File;

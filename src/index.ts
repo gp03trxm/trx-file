@@ -8,6 +8,7 @@ import fileCleaner from './libs/file-cleaner.js';
 import fs from 'fs';
 import sharp from 'sharp';
 import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
+import trxConsole from '@trx/trx-log';
 import { destination, HTTP_PORT, SCHEDULER_API } from './constants.js';
 import { download, fileExists, init as gcsInit } from './libs/gcs.js';
 import { errorToJson, setupPm2 } from './libs/utils.js';
@@ -78,7 +79,7 @@ app.post(
   uploadFileFormidable,
   fileConfigMiddleware,
   function (req: TrxFileRequest, res) {
-    console.log('[POST /files]', req.body);
+    console.log('[POST /files]', req.params, req.body);
     res.json(req.fileConfig);
   },
 );
@@ -185,6 +186,10 @@ app.post(
   },
 );
 
-app.listen(HTTP_PORT, () => console.log(`App listening on port ${+HTTP_PORT}`));
+app.listen(HTTP_PORT, () =>
+  trxConsole
+    .log(`App listening on port ${+HTTP_PORT}`)
+    .scalyr({ func: 'index' }),
+);
 
 setupPm2();
