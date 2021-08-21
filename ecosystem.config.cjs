@@ -5,7 +5,7 @@ const SITE_NAME = process.env.SITE_NAME || 'devpay';
 module.exports = {
   apps: [
     {
-      name: `${SITE_NAME}-trx-file`,
+      name: `file-${SITE_NAME}`,
       script: 'npm -- start',
 
       // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
