@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 export const destination = 'uploads';
 
 export const HTTP_PORT = process.env.HTTP_PORT ?? '3005';
@@ -9,6 +12,6 @@ export const SCHEDULER_API =
 export const ANTI_CAPTCHA_KEY =
   process.env.ANTI_CAPTCHA_KEY ?? '6bee4786e70fdeb2284c9ebef8220298';
 
-export const SITE_NAME = process.env.SITE_NAME ?? 'trxm';
+export const SITE_NAME = process.env.SITE_NAME ?? 'devpay';
 
 export const COMPONENT = process.env.COMPONENT ?? 'file';

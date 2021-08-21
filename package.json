@@ -10,8 +10,8 @@
     "test": "echo pass",
     "start": "npm run build && node -r source-map-support/register -r dotenv/config dist/index.js",
     "start:dev": "npm run build:watch & nodemon -r source-map-support/register -r dotenv/config --watch dist dist/index.js",
-    "start:pm2": "npm run build && pm2 startOrReload ecosystem.config.json --env production --update-env",
-    "start:pm2:docker": "npm run build && pm2 startOrReload ecosystem.config.json --no-daemon --env production --update-env",
+    "start:pm2": "npm run build && pm2 startOrReload ecosystem.config.cjs --env production --update-env",
+    "start:pm2:docker": "npm run build && pm2 startOrReload ecosystem.config.cjs --no-daemon --env production --update-env",
     "upload:smshook": "./scripts/upgrade-smshook.sh"
   },
   "author": "",
