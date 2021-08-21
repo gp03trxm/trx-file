@@ -2,6 +2,7 @@ import { ErrorCode, TrxError } from '@trx/trx-types';
 import { spawnSync } from 'child_process';
 import { COMPONENT, SITE_NAME } from '../constants.js';
 import { init as ioInit } from './pm2-io.js';
+import events from 'events';
 
 export function isImportantFile(filename: string) {
   return filename.indexOf('script-') !== -1 || filename.indexOf('apk') !== -1;
@@ -72,4 +73,9 @@ export const setupPm2 = () => {
       console.error('[setupPm2]', e);
     }
   }
+};
+
+export const setupEventListener = () => {
+  (events.EventEmitter.prototype as any)._maxListeners = 70;
+  events.EventEmitter.defaultMaxListeners = 70;
 };

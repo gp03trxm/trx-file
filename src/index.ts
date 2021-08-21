@@ -11,7 +11,7 @@ import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
 import trxConsole from '@trx/trx-log';
 import { destination, HTTP_PORT, SCHEDULER_API } from './constants.js';
 import { download, fileExists, init as gcsInit } from './libs/gcs.js';
-import { errorToJson, setupPm2 } from './libs/utils.js';
+import { errorToJson, setupEventListener, setupPm2 } from './libs/utils.js';
 import { serializeError } from 'serialize-error';
 import { TrxFileRequest } from './types.js';
 import './libs/console-override.js';
@@ -193,3 +193,4 @@ app.listen(HTTP_PORT, () =>
 );
 
 setupPm2();
+setupEventListener();
