@@ -13,6 +13,8 @@ RUN apk --no-cache add procps
 #
 COPY package.json package-lock.json .npmrc ./
 
+RUN npm -g install npm@7.21.0
+
 # When running with --production --pure-lockfile,
 # There will always be some missing modules. Dunno why...
 #
