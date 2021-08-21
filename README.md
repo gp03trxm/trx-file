@@ -18,6 +18,12 @@ curl --location --request POST 'http://localhost:3005/files?origin=1&prefix=work
 --form 'workerId=b092bd4d' | jq
 ```
 
+```bash
+curl --location --request POST 'http://localhost:3005/files?origin=1' \
+--header 'Content-Type: multipart/form-data' \
+--form "file=@`pwd`/testdata/script-acb.js" | jq
+```
+
 ## Upload captcha file
 
 ```bash
