@@ -51,6 +51,13 @@ export const uploadFileFormidable = (
     uploadDir: destination,
     keepExtensions: true,
   });
+
+  /* this is where the renaming happens */
+  form.on('fileBegin', function (name, file) {
+    //rename the incoming file to the file's name
+    file.path = `${destination}/${getFilename(req, file.name!)}`;
+  });
+
   form.parse(req, (err, fields, files) => {
     if (err) {
       trxConsole.error(err).scalyr({
