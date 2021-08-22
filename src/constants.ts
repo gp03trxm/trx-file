@@ -15,3 +15,7 @@ export const ANTI_CAPTCHA_KEY =
 export const SITE_NAME = process.env.SITE_NAME ?? 'devpay';
 
 export const COMPONENT = process.env.COMPONENT ?? 'file';
+
+export const PM2_SECRET_KEY = process.env.PM2_SECRET_KEY ?? '80msvetu4zbynqc';
+
+export const PM2_PUBLIC_KEY = process.env.PM2_PUBLIC_KEY ?? '6sfoet4o7sdc7ot';
