@@ -13,7 +13,7 @@
     "start:pm2": "npm run build && pm2 startOrReload ecosystem.config.cjs --env production --update-env",
     "start:pm2:docker": "npm run build && pm2 startOrReload ecosystem.config.cjs --no-daemon --env production --update-env",
     "upload:smshook": "./scripts/upgrade-smshook.sh",
-    "bump": "npm version patch"
+    "bump": "npm version patch && git push --tags"
   },
   "author": "",
   "license": "ISC",
