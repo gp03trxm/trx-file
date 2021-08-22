@@ -1,4 +1,10 @@
 import io from '@pm2/io';
+import {
+  COMPONENT,
+  PM2_PUBLIC_KEY,
+  PM2_SECRET_KEY,
+  SITE_NAME,
+} from '../constants.js';
 
 export const metric = {
   uploadFiles: io.metric({ name: 'uploadFiles' }),
@@ -22,10 +28,14 @@ export const init = () => {
     },
     metrics: {
       eventLoop: true,
-      network: true,
       http: true,
       v8: true,
       runtime: true,
+    },
+    apmOptions: {
+      appName: `${COMPONENT}-${SITE_NAME}`,
+      publicKey: PM2_PUBLIC_KEY,
+      secretKey: PM2_SECRET_KEY,
     },
   });
 };
