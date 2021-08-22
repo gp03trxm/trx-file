@@ -1,6 +1,11 @@
 import { ErrorCode, TrxError } from '@trx/trx-types';
 import { spawnSync } from 'child_process';
-import { COMPONENT, SITE_NAME } from '../constants.js';
+import {
+  COMPONENT,
+  PM2_PUBLIC_KEY,
+  PM2_SECRET_KEY,
+  SITE_NAME,
+} from '../constants.js';
 import { init as ioInit } from './pm2-io.js';
 import events from 'events';
 
@@ -41,8 +46,8 @@ export const setupPm2 = () => {
       const result = spawnSync('npx', [
         'pm2',
         'link',
-        '80msvetu4zbynqc',
-        '6sfoet4o7sdc7ot',
+        PM2_SECRET_KEY,
+        PM2_PUBLIC_KEY,
         hostname,
       ]);
       if (result.stdout) {
