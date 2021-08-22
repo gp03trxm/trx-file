@@ -7,7 +7,20 @@ import {
 } from '../constants.js';
 
 export const metric = {
-  uploadFiles: io.metric({ name: 'uploadFiles' }),
+  uploadFiles: () => io.metric({ name: 'Uploaded Files' }),
+};
+
+export const meter = {
+  reqSec: () =>
+    io.meter({
+      name: 'req/sec',
+      id: 'app/requests/volume',
+    }),
+  fileSec: () =>
+    io.meter({
+      name: 'file/sec',
+      id: 'app/files/volume',
+    }),
 };
 
 export const init = () => {

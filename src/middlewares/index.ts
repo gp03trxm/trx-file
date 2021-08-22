@@ -8,8 +8,9 @@ import { cp as gcsCp } from '../libs/gcs.js';
 import { destination } from '../constants.js';
 import { FileConfig } from '../types.js';
 import { isImportantFile } from '../libs/utils.js';
-import { metric as ioMetric } from '../libs/pm2-io.js';
+import { meter as ioMeter, metric as ioMetric } from '../libs/pm2-io.js';
 import { v4 as uuid } from 'uuid';
+import io from '@pm2/io';
 
 const splitExtension = (name: String) => {
   const index = name.lastIndexOf('.');
@@ -92,7 +93,9 @@ export const fileConfigMiddleware = (
 
   db.data!.uploadFiles++;
   db.write();
-  ioMetric.uploadFiles.set(db.data!.uploadFiles);
+
+  ioMetric.uploadFiles().set(db.data!.uploadFiles);
+  ioMeter.fileSec().mark();
 
   const { query, body, file, fileFormidable } = req;
   const filename = file?.filename ?? fileFormidable?.name;
