@@ -6,10 +6,9 @@ module.exports = {
   apps: [
     {
       name: `file-${SITE_NAME}`,
-      script: 'npm -- start',
-
-      // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-      args: 'one two',
+      script: './dist/index.js',
+      node_args: '-r source-map-support/register',
+      cmd: __dirname,
       instances: 1,
       autorestart: true,
       watch: false,
@@ -24,16 +23,4 @@ module.exports = {
       },
     },
   ],
-
-  deploy: {
-    production: {
-      user: 'node',
-      host: '212.83.163.1',
-      ref: 'origin/master',
-      repo: 'git@github.com:repo.git',
-      path: '/var/www/production',
-      'post-deploy':
-        'npm install && pm2 reload ecosystem.config.js --env production',
-    },
-  },
 };
