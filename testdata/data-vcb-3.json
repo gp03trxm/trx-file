@@ -1,0 +1,7 @@
+{
+  "width": "1080",
+  "height": "490",
+  "left": "0",
+  "top": "1188",
+  "captchaConfig": { "algorithm": "tesseract" }
+}

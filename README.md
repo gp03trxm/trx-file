@@ -64,6 +64,14 @@ curl --location --request POST "http://localhost:3005/captcha-crop" \
 --form "bodyString=$c" | jq
 ```
 
+```bash
+c=`cat testdata/data-vcb-3.json`
+curl --location --request POST "http://localhost:3005/captcha-crop" \
+--header "Content-Type: multipart/form-data" \
+--form "file=@`pwd`/testdata/data-vcb-raw-3.png" \
+--form "bodyString=$c" | jq
+```
+
 ## Use captcha
 
 ```bash
