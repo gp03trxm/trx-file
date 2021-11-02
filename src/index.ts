@@ -20,6 +20,7 @@ import {
   fileConfigMiddleware,
   uploadMiddleware,
 } from './middlewares/index.js';
+import { LogType } from '@trx/trx-types';
 
 gcsInit().catch(console.error);
 fileCleaner.startAsService().catch(console.error);
@@ -108,7 +109,11 @@ app.post(
   uploadMiddleware,
   fileConfigMiddleware,
   async function (req: TrxFileRequest, res) {
-    console.log('[POST /captcha-crop]', req.body);
+    const baseLog: Partial<LogType> = {
+      func: 'postCaptchaCrop',
+    };
+
+    trxConsole.log('[POST /captcha-crop]', req.body).scalyr(baseLog);
     const body = JSON.parse(req.body.bodyString ?? '{}');
     const { width, height, left, top } = body;
     const captchaConfig = body.captchaConfig as TrxCaptchaConfig;
@@ -129,7 +134,7 @@ app.post(
       };
     }
 
-    console.log('[POST /ocr] region: ', region);
+    trxConsole.log('[POST /captcha-crop] region: ', region).scalyr(baseLog);
 
     if (fileConfig && fileConfigPath) {
       try {
@@ -147,10 +152,15 @@ app.post(
         // overwrite the file config
         fs.writeFileSync(fileConfigPath, JSON.stringify(result, null, 2));
 
-        console.log('[POST /ocr] result = ', captcha);
+        trxConsole.log('[POST /captcha-crop] result = ', captcha).scalyr({
+          ...baseLog,
+          data: captcha,
+        });
         res.json(result);
-      } catch (error) {
-        console.error('[POST /ocr] error = ', error);
+      } catch (error: any) {
+        trxConsole
+          .error('[POST /captcha-crop] error = ', error)
+          .scalyr({ ...baseLog, error });
         res.status(500).json({
           error: serializeError(error),
         });
