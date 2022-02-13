@@ -12,9 +12,9 @@ before_script:
   - node -v
 
 stages:
-  - build
   - test
-  - deploy
+  - build
+  # - deploy
 
 main_test:
   stage: test
