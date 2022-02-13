@@ -10,7 +10,6 @@ import { FileConfig } from '../types.js';
 import { isImportantFile } from '../libs/utils.js';
 import { meter as ioMeter, metric as ioMetric } from '../libs/pm2-io.js';
 import { v4 as uuid } from 'uuid';
-import io from '@pm2/io';
 
 const splitExtension = (name: String) => {
   const index = name.lastIndexOf('.');
@@ -57,7 +56,14 @@ export const uploadFileFormidable = (
   /* this is where the renaming happens */
   form.on('fileBegin', function (name, file) {
     //rename the incoming file to the file's name
-    file.path = `${destination}/${getFilename(req, file.name!)}`;
+    try {
+      file.path = `${destination}/${getFilename(req, file.name!)}`;
+    } catch (e: any) {
+      trxConsole.error('[uploadFileFormidable][fileBegin]', e).scalyr({
+        func: 'uploadFileFormidable',
+        error: e,
+      });
+    }
   });
 
   form.parse(req, (err, fields, files) => {
@@ -72,9 +78,17 @@ export const uploadFileFormidable = (
       });
       return next(err);
     }
-    const file = files.file as File;
-    file.name = getFilename(req, file.name!);
-    Object.assign(req, { fileFormidable: file });
+
+    try {
+      const file = files.file as File;
+      file.name = getFilename(req, file.name!);
+      Object.assign(req, { fileFormidable: file });
+    } catch (e: any) {
+      trxConsole.error('[uploadFileFormidable][parse]', e).scalyr({
+        func: 'uploadFileFormidable',
+        error: e,
+      });
+    }
     next();
   });
 };
