@@ -50,7 +50,7 @@ export const uploadFileFormidable = (
     multiples: true,
     uploadDir: destination,
     keepExtensions: true,
-    maxFileSize: 500 * 1024 * 1024, // 500 mb
+    maxFileSize: 600 * 1024 * 1024, // 600 mb
   });
 
   /* this is where the renaming happens */
