@@ -25,28 +25,28 @@ main_test:
     - /^feature\/deploy.*$/
     - /^build-.*$/
 
-deploy_to_production:
-  stage: deploy
-  variables:
-    REPOSITORY_NAME: $CI_PROJECT_NAME
-    HOSTS: trx-vnpay
-  script:
-    - echo temporary disable
-  only:
-    - /^v.*$/
+# deploy_to_production:
+#   stage: deploy
+#   variables:
+#     REPOSITORY_NAME: $CI_PROJECT_NAME
+#     HOSTS: trx-vnpay
+#   script:
+#     - echo temporary disable
+#   only:
+#     - /^v.*$/
 
-deploy_to_staging:
-  stage: deploy
-  variables:
-    REPOSITORY_NAME: $CI_PROJECT_NAME
-    HOSTS: dfg-beta-cn trx-sk
-  script:
-    - echo temporary disable
-  only:
-    - master
-    - /^feature\/deploy.*$/
-  except:
-    - /^build-.*$/
+# deploy_to_staging:
+#   stage: deploy
+#   variables:
+#     REPOSITORY_NAME: $CI_PROJECT_NAME
+#     HOSTS: dfg-beta-cn trx-sk
+#   script:
+#     - echo temporary disable
+#   only:
+#     - master
+#     - /^feature\/deploy.*$/
+#   except:
+#     - /^build-.*$/
 
 build:
   stage: build
