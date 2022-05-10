@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 
 const SITE_NAME = process.env.SITE_NAME || 'devpay';
 
