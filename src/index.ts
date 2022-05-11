@@ -202,5 +202,9 @@ app.listen(HTTP_PORT, () =>
     .scalyr({ func: 'index' }),
 );
 
-setupPm2();
-setupEventListener();
+try {
+  setupPm2();
+  setupEventListener();
+} catch (error: any) {
+  trxConsole.error('[setup] error = ', error).scalyr({ func: 'setup', error });
+}
