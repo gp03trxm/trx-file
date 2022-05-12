@@ -19,10 +19,16 @@ export async function init() {
 
     if (existedBuckets.indexOf(b) === -1) {
       console.log('[gcs-init] create a bucket');
-      await storage.createBucket(b, {
+      const [createdBucket] = await storage.createBucket(b, {
         standard: true,
         location: 'asia-east1',
       });
+
+      createdBucket.addLifecycleRule({
+        action: { type: 'Delete' },
+        condition: { age: 10 },
+      });
+
       console.log('[gcs-init] done');
     } else {
       console.log('[gcs-init] bucket existed');
