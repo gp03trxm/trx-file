@@ -34,6 +34,20 @@ export const createTrxError = (
   return { name, message, stack: stack ?? new Error().stack };
 };
 
+export const getLastPathSegment = (filename: string) => {
+  if (filename.lastIndexOf('/') == -1) return null;
+  return filename.substring(filename.lastIndexOf('/') + 1);
+};
+
+/**
+ *
+ * legacy: anr-stack-trace-14b68277e63b2496-1656536383046.txt
+ * new: skpay/456c899a-c6d3-4da3-be21-82cc09696e9f/screenrecord-ba82528ae1744327-62c74ad11da423003a1856be.mp4
+ */
+export const isLegacyPath = (filename: string) => {
+  return !filename.match(/.*\/.*\/.*/);
+};
+
 /**
  * pm2 link 80msvetu4zbynqc 6sfoet4o7sdc7ot MACHINE_NAME
  */
