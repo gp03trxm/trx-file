@@ -103,7 +103,7 @@ app.use('/files', express.static(DESTINATION), async (req, res, next) => {
 
       return res.sendFile(filePath);
     }
-  } catch (e) {
+  } catch (e: any) {
     res.status(500);
     res.json({ message: e.message });
   }
@@ -131,7 +131,7 @@ app.post(
         algorithm: req.body.algorithm ?? 'basic',
       });
       res.json({ ...req.fileConfig, captcha: result });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       res.json({ error: errorToJson(error) });
     }
