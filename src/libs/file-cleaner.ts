@@ -1,13 +1,30 @@
-import fs from 'fs';
+import fs from 'node:fs/promises';
 import { isImportantFile } from './utils.js';
+
+/**
+ * https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
+ * @param dir
+ * @returns
+ */
+// async function getFiles(dir = 'uploads') {
+//   const dirs = await fs.readdir(dir, { withFileTypes: true });
+//   const files: any = await Promise.all(
+//     dirs.map(dirent => {
+//       const res = resolve(dir, dirent.name);
+//       return dirent.isDirectory() ? getFiles(res) : res;
+//     }),
+//   );
+//   return Array.prototype.concat(...files);
+// }
 
 const run = async (dirName = 'uploads') => {
   console.log('[filter-cleaner] run at dir:', dirName);
-  const files = fs.readdirSync(dirName);
+
+  const files = await fs.readdir(dirName);
   const now = new Date();
   for (let f of files) {
     const fileWithDir = `${dirName}/${f}`;
-    const stat = fs.statSync(fileWithDir);
+    const stat = await fs.stat(fileWithDir);
 
     /**
      * skip directory, script-*.js and *.apk
@@ -32,7 +49,7 @@ const run = async (dirName = 'uploads') => {
     // TTL: 1 hour
     if (diff >= 1000 * 60 * 60) {
       console.log('[filter-cleaner] delete file', f);
-      fs.unlinkSync(fileWithDir);
+      await fs.unlink(fileWithDir);
     }
   }
   console.log('[filter-cleaner] done', dirName);
