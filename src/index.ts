@@ -1,3 +1,4 @@
+import path from 'node:path';
 import _ from 'lodash';
 import cors from 'cors';
 import crop from './image-process/crop.js';
@@ -11,7 +12,13 @@ import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
 import trxConsole from '@trx/trx-log';
 import { DESTINATION, HTTP_PORT, SCHEDULER_API } from './constants.js';
 import { download, fileExists, init as gcsInit } from './libs/gcs.js';
-import { errorToJson, setupEventListener, setupPm2 } from './libs/utils.js';
+import {
+  errorToJson,
+  getLastPathSegment,
+  isLegacyPath,
+  setupEventListener,
+  setupPm2,
+} from './libs/utils.js';
 import { serializeError } from 'serialize-error';
 import { TrxFileRequest } from './types.js';
 import './libs/console-override.js';
@@ -21,6 +28,7 @@ import {
   uploadMiddleware,
 } from './middlewares/index.js';
 import { LogType } from '@trx/trx-types';
+import e from 'cors';
 
 gcsInit().catch(console.error);
 fileCleaner.startAsService().catch(console.error);
@@ -54,20 +62,46 @@ app.use('/files', express.static(DESTINATION), async (req, res, next) => {
     return next();
   }
 
-  console.log(`[GET /files${req.path}] file not found`);
   try {
-    const gcsFilename = destination + req.path;
-    if (await fileExists(gcsFilename)) {
+    const gcsFilename = req.path;
+    const isLegacy = isLegacyPath(gcsFilename);
+
+    if (isLegacy) {
+      const fileInGcs = await fileExists(gcsFilename);
+
+      if (!fileInGcs) {
+        return res.status(404).json({ message: 'file not found' });
+      }
+
       console.log(`[GET /files${req.path}] download file from gcs`);
       const [fileMeta, headers] = await download(gcsFilename);
 
       db.data?.retrievedFiles.push(_.pick(fileMeta, 'name', 'size', 'updated'));
       db.write();
+      return res.redirect(req.originalUrl);
+    }
 
-      res.redirect(req.originalUrl);
-    } else {
-      res.status(404);
-      res.json({ message: 'file not found' });
+    if (!isLegacy) {
+      const filePath = path.resolve(
+        `./${DESTINATION}/${getLastPathSegment(req.path)}`,
+      );
+
+      if (fs.existsSync(filePath)) {
+        return res.sendFile(filePath);
+      }
+
+      const fileInGcs = await fileExists(gcsFilename);
+
+      if (!fileInGcs) {
+        return res.status(404).json({ message: 'file not found' });
+      }
+
+      console.log(`[GET /files${req.path}] download file from gcs`);
+      const [fileMeta, headers] = await download(gcsFilename);
+
+      console.log(`[GET /files${req.path}]`, fileMeta);
+
+      return res.sendFile(filePath);
     }
   } catch (e) {
     res.status(500);

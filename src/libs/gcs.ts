@@ -1,5 +1,6 @@
 import { Storage } from '@google-cloud/storage';
-import { SITE_NAME } from '../constants.js';
+import { DESTINATION, SITE_NAME } from '../constants.js';
+import { getLastPathSegment } from './utils.js';
 
 const keyFilename = process.cwd() + '/gcp-service-key.json';
 const storage = new Storage({
@@ -7,11 +8,12 @@ const storage = new Storage({
   keyFilename,
 });
 
-const shortLivedBucket = 'trx-file-anonymous-' + (SITE_NAME || 'vnpay');
+const shortLivedBucket = 'trx-file-short-lived';
+const shortLivedBucketLegacy = 'trx-file-anonymous-' + (SITE_NAME || 'vnpay');
 const captchaBucket = 'trx-file-captcha';
 
 export async function init() {
-  const initBuckets = [shortLivedBucket, captchaBucket];
+  const initBuckets = [shortLivedBucket, shortLivedBucketLegacy, captchaBucket];
   const existedBuckets = (await storage.getBuckets())[0].map(b => b.name);
 
   for (const b of initBuckets) {
@@ -44,7 +46,7 @@ export async function cp(
   const { captcha } = option;
 
   return storage
-    .bucket(captcha ? captchaBucket : shortLivedBucket)
+    .bucket(captcha ? captchaBucket : shortLivedBucketLegacy)
     .upload(localFilename, {
       destination,
       metadata: {
@@ -56,8 +58,23 @@ export async function cp(
     });
 }
 
+/**
+ * https://storage.cloud.google.com/trx-file-short-lived/skpay/456c899a-c6d3-4da3-be21-82cc09696e9f/screenrecord-ba82528ae1744327-62c74ad11da423003a1856be.mp4
+ * https://storage.cloud.google.com/trx-file-anonymous-skpay/uploads/anr-stack-trace-14b68277e63b2496-1656536383046.txt
+ *
+ * legacy: anr-stack-trace-14b68277e63b2496-1656536383046.txt
+ * new: skpay/456c899a-c6d3-4da3-be21-82cc09696e9f/screenrecord-ba82528ae1744327-62c74ad11da423003a1856be.mp4
+ *
+ */
+
 export async function fileExists(filename: string) {
-  return (await storage.bucket(shortLivedBucket).file(filename).exists())[0];
+  const legacy = !filename.match(/.*\/.*\/.*/);
+  const gcsFilename = legacy ? DESTINATION + filename : filename.substring(1);
+  const bucket = legacy ? shortLivedBucketLegacy : shortLivedBucket;
+
+  console.log('[fileExists]', legacy, gcsFilename);
+
+  return (await storage.bucket(bucket).file(gcsFilename).exists())[0];
 }
 
 /**
@@ -66,9 +83,17 @@ export async function fileExists(filename: string) {
  * @returns
  */
 export async function download(filename: string) {
+  const matches = filename.match(/.*\/.*\/.*/);
+  const legacy = !matches;
+  const gcsFilename = legacy ? DESTINATION + filename : filename.substring(1);
+  const bucket = legacy ? shortLivedBucketLegacy : shortLivedBucket;
+
   await storage
-    .bucket(shortLivedBucket)
-    .file(filename)
-    .download({ destination: filename });
-  return storage.bucket(shortLivedBucket).file(filename).getMetadata();
+    .bucket(bucket)
+    .file(gcsFilename)
+    .download({
+      destination: DESTINATION + '/' + getLastPathSegment(filename),
+    });
+
+  return storage.bucket(bucket).file(gcsFilename).getMetadata();
 }
