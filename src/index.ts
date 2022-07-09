@@ -9,7 +9,7 @@ import fs from 'fs';
 import sharp from 'sharp';
 import trxCaptcha, { TrxCaptchaConfig } from '@trx/trx-captcha';
 import trxConsole from '@trx/trx-log';
-import { destination, HTTP_PORT, SCHEDULER_API } from './constants.js';
+import { DESTINATION, HTTP_PORT, SCHEDULER_API } from './constants.js';
 import { download, fileExists, init as gcsInit } from './libs/gcs.js';
 import { errorToJson, setupEventListener, setupPm2 } from './libs/utils.js';
 import { serializeError } from 'serialize-error';
@@ -49,7 +49,7 @@ app.get('/db/:key', (req, res) => {
   res.json(db.data?.[key]);
 });
 
-app.use('/files', express.static(destination), async (req, res, next) => {
+app.use('/files', express.static(DESTINATION), async (req, res, next) => {
   if (req.method !== 'GET') {
     return next();
   }
@@ -139,7 +139,7 @@ app.post(
     if (fileConfig && fileConfigPath) {
       try {
         const { base64, ...cropMetadata } = await crop(
-          destination,
+          DESTINATION,
           filename,
           region,
         );

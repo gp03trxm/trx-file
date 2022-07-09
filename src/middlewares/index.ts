@@ -5,7 +5,7 @@ import fs from 'fs';
 import multer from 'multer';
 import trxConsole from '@trx/trx-log';
 import { cp as gcsCp } from '../libs/gcs.js';
-import { destination } from '../constants.js';
+import { DESTINATION } from '../constants.js';
 import { FileConfig } from '../types.js';
 import { isImportantFile } from '../libs/utils.js';
 import { meter as ioMeter, metric as ioMetric } from '../libs/pm2-io.js';
@@ -34,7 +34,7 @@ const getFilename = (req: express.Request, originalname: string) => {
 
 export const uploadMiddleware = multer({
   storage: multer.diskStorage({
-    destination,
+    destination: DESTINATION,
     filename: (req, file, cb) => {
       cb(null, getFilename(req, file.originalname));
     },
@@ -48,7 +48,7 @@ export const uploadFileFormidable = (
 ) => {
   const form = formidable({
     multiples: true,
-    uploadDir: destination,
+    uploadDir: DESTINATION,
     keepExtensions: true,
     maxFileSize: 600 * 1024 * 1024, // 600 mb
   });
@@ -57,7 +57,7 @@ export const uploadFileFormidable = (
   form.on('fileBegin', function (name, file) {
     //rename the incoming file to the file's name
     try {
-      file.path = `${destination}/${getFilename(req, file.name!)}`;
+      file.path = `${DESTINATION}/${getFilename(req, file.name!)}`;
     } catch (e: any) {
       trxConsole.error('[uploadFileFormidable][fileBegin]', e).scalyr({
         func: 'uploadFileFormidable',
@@ -126,11 +126,11 @@ export const fileConfigMiddleware = (
   };
   const { captcha } = body ?? {};
 
-  const fileConfigPath = `${destination}/${filename}.json`;
+  const fileConfigPath = `${DESTINATION}/${filename}.json`;
   fs.writeFileSync(fileConfigPath, JSON.stringify(fileConfig, null, 2));
   Object.assign(req, { fileConfig, fileConfigPath });
 
-  const from = fileFormidable?.path ?? `${destination}/${filename}`;
+  const from = fileFormidable?.path ?? `${DESTINATION}/${filename}`;
 
   gcsCp(from, `uploads/${filename}`, { captcha })
     .then(() => {
