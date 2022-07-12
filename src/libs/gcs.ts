@@ -1,5 +1,6 @@
 import { Storage } from '@google-cloud/storage';
-import { DESTINATION, SITE_NAME } from '../constants.js';
+import { DESTINATION, SITE_BUCKETS, SITE_NAME } from '../constants.js';
+import { GCSFileDescriptor } from '../types.js';
 import { getLastPathSegment } from './utils.js';
 
 const keyFilename = process.cwd() + '/gcp-service-key.json';
@@ -67,14 +68,42 @@ export async function cp(
  *
  */
 
-export async function fileExists(filename: string) {
+export async function fileExists(
+  filename: string,
+): Promise<GCSFileDescriptor | null> {
   const legacy = !filename.match(/.*\/.*\/.*/);
-  const gcsFilename = legacy ? DESTINATION + filename : filename.substring(1);
-  const bucket = legacy ? shortLivedBucketLegacy : shortLivedBucket;
+  const legacyPath = DESTINATION + '/' + filename;
 
-  console.log('[fileExists]', legacy, gcsFilename);
+  console.log('[fileExists]', filename);
 
-  return (await storage.bucket(bucket).file(gcsFilename).exists())[0];
+  let existed = (
+    await storage.bucket(shortLivedBucketLegacy).file(legacyPath).exists()
+  )[0];
+  if (existed) {
+    return { bucket: shortLivedBucketLegacy, path: legacyPath };
+  }
+
+  const taskId: string | undefined = (filename.match(/[a-f\d]{24}/i) || [])[0];
+  const gcsPossibleFilename = [`none/${filename}`, `${taskId}/${filename}`];
+
+  const bucketAndPaths = SITE_BUCKETS.map(site => {
+    return gcsPossibleFilename.map(path => {
+      return {
+        bucket: shortLivedBucket,
+        path: `${site}/${path}`,
+      };
+    });
+  }).flat();
+
+  const promises = bucketAndPaths.map(async ({ bucket, path }) => {
+    let existed = (await storage.bucket(bucket).file(path).exists())[0];
+    return existed ? { bucket: bucket, path: path } : null;
+  });
+
+  const result = (await Promise.all(promises)).filter(e => e);
+  console.log('[fileExists]', result);
+
+  return result[0];
 }
 
 /**
@@ -82,18 +111,13 @@ export async function fileExists(filename: string) {
  * @param filename
  * @returns
  */
-export async function download(filename: string) {
-  const matches = filename.match(/.*\/.*\/.*/);
-  const legacy = !matches;
-  const gcsFilename = legacy ? DESTINATION + filename : filename.substring(1);
-  const bucket = legacy ? shortLivedBucketLegacy : shortLivedBucket;
-
+export async function download({ bucket, path }: GCSFileDescriptor) {
   await storage
     .bucket(bucket)
-    .file(gcsFilename)
+    .file(path)
     .download({
-      destination: DESTINATION + '/' + getLastPathSegment(filename),
+      destination: DESTINATION + '/' + getLastPathSegment(path),
     });
 
-  return storage.bucket(bucket).file(gcsFilename).getMetadata();
+  return storage.bucket(bucket).file(path).getMetadata();
 }

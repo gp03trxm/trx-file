@@ -63,7 +63,8 @@ app.use('/files', express.static(DESTINATION), async (req, res, next) => {
   }
 
   try {
-    const gcsFilename = req.path;
+    // remove `/`
+    const gcsFilename = req.path.substring(1);
     const isLegacy = isLegacyPath(gcsFilename);
 
     if (isLegacy) {
@@ -74,7 +75,7 @@ app.use('/files', express.static(DESTINATION), async (req, res, next) => {
       }
 
       console.log(`[GET /files${req.path}] download file from gcs`);
-      const [fileMeta, headers] = await download(gcsFilename);
+      const [fileMeta, headers] = await download(fileInGcs);
 
       db.data?.retrievedFiles.push(_.pick(fileMeta, 'name', 'size', 'updated'));
       db.write();
@@ -97,7 +98,7 @@ app.use('/files', express.static(DESTINATION), async (req, res, next) => {
       }
 
       console.log(`[GET /files${req.path}] download file from gcs`);
-      const [fileMeta, headers] = await download(gcsFilename);
+      const [fileMeta, headers] = await download(fileInGcs);
 
       console.log(`[GET /files${req.path}]`, fileMeta);
 

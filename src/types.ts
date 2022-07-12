@@ -48,3 +48,8 @@ export type TrxFileRequest = Request & {
   fileConfig?: FileConfig;
   fileConfigPath?: string;
 };
+
+export type GCSFileDescriptor = {
+  bucket: string;
+  path: string;
+};

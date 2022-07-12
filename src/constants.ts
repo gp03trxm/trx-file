@@ -1,6 +1,28 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+/**
+ * @workaround
+ */
+export const SITE_BUCKETS = [
+  'vnpay',
+  'skpay',
+  'cnpay',
+  'dnpay',
+  'dnpay-file',
+  'rppay',
+  'vtpay',
+  'nyypay',
+  'nyypay-file',
+  'vngoldpay',
+  'vipay',
+  '101pay',
+  'tcgpay',
+  'ttpay',
+  'ydpay',
+  'fayapay',
+];
+
 export const DESTINATION = 'uploads';
 
 export const HTTP_PORT = process.env.HTTP_PORT ?? '3005';
