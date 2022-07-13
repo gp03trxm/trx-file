@@ -16,6 +16,7 @@ export const SITE_BUCKETS = [
   'nyypay-file',
   'vngoldpay',
   'vipay',
+  'vi', // legacy
   '101pay',
   'tcgpay',
   'ttpay',
