@@ -16,12 +16,15 @@ export const SITE_BUCKETS = [
   'nyypay-file',
   'vngoldpay',
   'vipay',
-  'vi', // legacy
   '101pay',
   'tcgpay',
   'ttpay',
   'ydpay',
   'fayapay',
+  'vi', // legacy
+  '101',
+  'tcg',
+  'dn',
 ];
 
 export const DESTINATION = 'uploads';
