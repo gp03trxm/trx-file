@@ -1,6 +1,6 @@
 {
   "name": "trx-file",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "trx file",
   "export": "index.js",
   "scripts": {
