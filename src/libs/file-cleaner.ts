@@ -1,3 +1,4 @@
+import tconsole from '@trx/trx-log';
 import fs from 'node:fs/promises';
 import { isImportantFile } from './utils.js';
 
@@ -56,7 +57,15 @@ const run = async (dirName = 'uploads') => {
 };
 
 const startAsService = async () => {
-  await run();
+  try {
+    await run();
+  } catch (e: any) {
+    tconsole.error(e).send({
+      component: 'trx-file',
+      subComponent: 'file-cleaner',
+      error: e,
+    });
+  }
   setInterval(run, 1000 * 60 * 60); // 15m
 };
 
