@@ -25,6 +25,10 @@ export const SITE_BUCKETS = [
   '101',
   'tcg',
   'dn',
+  'csm',
+  'csmpay',
+  'nissin',
+  'nissinpay',
 ];
 
 export const DESTINATION = 'uploads';
