@@ -21,7 +21,7 @@ export const SITE_BUCKETS = [
   'ttpay',
   'ydpay',
   'fayapay',
-  'vi', // legacy
+  'vi',
   '101',
   'tcg',
   'dn',
@@ -29,6 +29,12 @@ export const SITE_BUCKETS = [
   'csmpay',
   'nissin',
   'nissinpay',
+  'vt',
+  'rmpay',
+  'tnpay',
+  'vng',
+  'dh',
+  'trxm',
 ];
 
 export const DESTINATION = 'uploads';
