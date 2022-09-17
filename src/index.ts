@@ -221,6 +221,9 @@ app.post(
 
     const api = SCHEDULER_API;
     const upgradeApi = `${api}/configs/app-version/upgrade`;
+    console.log('[POST /app-upgrade] fileConfig:', fileConfig);
+    console.log('[POST /app-upgrade] upgradeApi:', upgradeApi);
+
     const json = await fetch(upgradeApi, {
       method: 'POST',
       body: JSON.stringify({ appId, version, url: fileConfig?.url.file }),
