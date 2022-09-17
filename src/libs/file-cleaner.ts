@@ -25,7 +25,11 @@ const run = async (dirName = 'uploads') => {
   const now = new Date();
   for (let f of files) {
     const fileWithDir = `${dirName}/${f}`;
-    const stat = await fs.stat(fileWithDir);
+    const stat = await fs.stat(fileWithDir).catch(console.error);
+
+    if (!stat) {
+      continue;
+    }
 
     /**
      * skip directory, script-*.js and *.apk
@@ -50,7 +54,7 @@ const run = async (dirName = 'uploads') => {
     // TTL: 1 hour
     if (diff >= 1000 * 60 * 60) {
       console.log('[filter-cleaner] delete file', f);
-      await fs.unlink(fileWithDir);
+      await fs.unlink(fileWithDir).catch(console.error);
     }
   }
   console.log('[filter-cleaner] done', dirName);
