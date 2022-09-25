@@ -113,6 +113,10 @@ export const fileConfigMiddleware = (
   ioMeter.fileSec().mark();
 
   const { query, body, file, fileFormidable } = req;
+
+  const protocol =
+    req.headers.host?.indexOf('localhost') === -1 ? 'https' : 'http';
+
   const filename = file?.filename ?? fileFormidable?.name;
   const fileConfig: FileConfig = {
     createdAt: new Date().toISOString(),
@@ -120,8 +124,8 @@ export const fileConfigMiddleware = (
     query,
     file: file ?? fileFormidable,
     url: {
-      file: 'http://' + req.headers.host + `/files/${filename}`,
-      config: 'http://' + req.headers.host + `/files/${filename}.json`,
+      file: `${protocol}://${req.headers.host}/files/${filename}`,
+      config: `${protocol}://${req.headers.host}/files/${filename}.json`,
     },
   };
   const { captcha } = body ?? {};
