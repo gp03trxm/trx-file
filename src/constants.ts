@@ -35,6 +35,10 @@ export const SITE_BUCKETS = [
   'vng',
   'dh',
   'trxm',
+  'cepay',
+  'tgpay',
+  'jspay',
+  '365pay',
 ];
 
 export const DESTINATION = 'uploads';
