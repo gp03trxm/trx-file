@@ -39,6 +39,9 @@ export const SITE_BUCKETS = [
   'tgpay',
   'jspay',
   '365pay',
+  'vmspay',
+  'oceanpay',
+  'wppay',
 ];
 
 export const DESTINATION = 'uploads';
