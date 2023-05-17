@@ -43,6 +43,8 @@ export const SITE_BUCKETS = [
   'oceanpay',
   'wppay',
   'galipay',
+  'amgpay',
+  'ddpay',
 ];
 
 export const DESTINATION = 'uploads';
