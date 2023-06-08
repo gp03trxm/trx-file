@@ -42,6 +42,7 @@ export const SITE_BUCKETS = [
   'vmspay',
   'oceanpay',
   'wppay',
+  'worldpaypay',
   'galipay',
   'amgpay',
   'ddpay',
