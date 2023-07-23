@@ -104,6 +104,24 @@ export async function fileExists(
   console.log('[fileExists]', result);
 
   return result[0];
+export async function batchExisted(bucketWithPaths: GCSFileDescriptor[]) {
+  const results = await Promise.all(
+    bucketWithPaths.map(async ({ bucket, path }) => {
+      if ((await storage.bucket(bucket).file(path).exists())[0]) {
+        return { bucket, path };
+      } else {
+        return null;
+      }
+    }),
+  );
+
+  const found = results.filter(r => r !== null);
+
+  if (found[0]) {
+    return found[0];
+  } else {
+    return null;
+  }
 }
 
 /**
