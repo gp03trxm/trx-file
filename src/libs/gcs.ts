@@ -1,5 +1,5 @@
 import { Storage } from '@google-cloud/storage';
-import { DESTINATION, SITE_BUCKETS, SITE_NAME } from '../constants.js';
+import { DESTINATION, SITE_NAME } from '../constants.js';
 import { GCSFileDescriptor } from '../types.js';
 import { getLastPathSegment } from './utils.js';
 
@@ -9,12 +9,20 @@ const storage = new Storage({
   keyFilename,
 });
 
-const shortLivedBucket = 'trx-file-short-lived';
-const shortLivedBucketLegacy = 'trx-file-anonymous-' + (SITE_NAME || 'vnpay');
-const captchaBucket = 'trx-file-captcha';
+const LEGACY_SITE_BUCKETS: string[] = [];
+const BUCKET_PREFIXES: string[] = [];
+
+const SHORT_LIVED_BUCKET = 'trx-file-short-lived';
+const SHORT_LIVED_BUCKET_LEGACY =
+  'trx-file-anonymous-' + (SITE_NAME || 'vnpay');
+const CAPTCHA_BUCKET = 'trx-file-captcha';
 
 export async function init() {
-  const initBuckets = [shortLivedBucket, shortLivedBucketLegacy, captchaBucket];
+  const initBuckets = [
+    SHORT_LIVED_BUCKET,
+    SHORT_LIVED_BUCKET_LEGACY,
+    CAPTCHA_BUCKET,
+  ];
   const existedBuckets = (await storage.getBuckets())[0].map(b => b.name);
 
   for (const b of initBuckets) {
@@ -37,6 +45,21 @@ export async function init() {
       console.log('[gcs-init] bucket existed');
     }
   }
+
+  LEGACY_SITE_BUCKETS.push(
+    ...existedBuckets.filter(b => b.indexOf('trx-file-anonymous-') !== -1),
+  );
+
+  const prefixes = (
+    await storage
+      .bucket(SHORT_LIVED_BUCKET)
+      .getFiles({ maxResults: 100, delimiter: '/' })
+  )[2].prefixes;
+
+  BUCKET_PREFIXES.push(...prefixes);
+
+  console.log('[gcs-init]', LEGACY_SITE_BUCKETS);
+  console.log('[gcs-init]', BUCKET_PREFIXES);
 }
 
 export async function cp(
@@ -47,7 +70,7 @@ export async function cp(
   const { captcha } = option;
 
   return storage
-    .bucket(captcha ? captchaBucket : shortLivedBucketLegacy)
+    .bucket(captcha ? CAPTCHA_BUCKET : SHORT_LIVED_BUCKET_LEGACY)
     .upload(localFilename, {
       destination,
       metadata: {
@@ -71,39 +94,71 @@ export async function cp(
 export async function fileExists(
   filename: string,
 ): Promise<GCSFileDescriptor | null> {
-  const legacy = !filename.match(/.*\/.*\/.*/);
   const legacyPath = DESTINATION + '/' + filename;
+  const taskId: string | undefined = (filename.match(/[a-f\d]{24}/i) || [])[0];
 
   console.log('[fileExists]', filename);
 
-  let existed = (
-    await storage.bucket(shortLivedBucketLegacy).file(legacyPath).exists()
-  )[0];
+  /**
+   * Try bucket for current SITE_NAME
+   */
+  const currentSites: GCSFileDescriptor[] = [
+    {
+      bucket: SHORT_LIVED_BUCKET_LEGACY,
+      path: legacyPath,
+    },
+    {
+      bucket: SHORT_LIVED_BUCKET,
+      path: `${SITE_NAME}/none/${filename}`,
+    },
+    {
+      bucket: SHORT_LIVED_BUCKET,
+      path: `${SITE_NAME}/${taskId}/${filename}`,
+    },
+  ];
+
+  const existed = await batchExisted(currentSites);
   if (existed) {
-    return { bucket: shortLivedBucketLegacy, path: legacyPath };
+    console.log('[fileExists] current site found:', existed);
+    return existed;
   }
 
-  const taskId: string | undefined = (filename.match(/[a-f\d]{24}/i) || [])[0];
-  const gcsPossibleFilename = [`none/${filename}`, `${taskId}/${filename}`];
+  console.log(`[fileExists] File not found in the current site: ${SITE_NAME}`);
 
-  const bucketAndPaths = SITE_BUCKETS.map(site => {
-    return gcsPossibleFilename.map(path => {
-      return {
-        bucket: shortLivedBucket,
-        path: `${site}/${path}`,
-      };
+  /**
+   * Try brute force all buckets
+   */
+
+  const allBuckets: GCSFileDescriptor[] = [];
+  for (let bucket of LEGACY_SITE_BUCKETS) {
+    allBuckets.push({
+      path: legacyPath,
+      bucket,
     });
-  }).flat();
+  }
+  for (let prefix of BUCKET_PREFIXES) {
+    allBuckets.push(
+      {
+        bucket: SHORT_LIVED_BUCKET,
+        path: `${prefix}none/${filename}`,
+      },
+      {
+        bucket: SHORT_LIVED_BUCKET,
+        path: `${prefix}${taskId}/${filename}`,
+      },
+    );
+  }
 
-  const promises = bucketAndPaths.map(async ({ bucket, path }) => {
-    let existed = (await storage.bucket(bucket).file(path).exists())[0];
-    return existed ? { bucket: bucket, path: path } : null;
-  });
+  const existed2 = await batchExisted(allBuckets);
+  if (existed2) {
+    console.log('[fileExists] brute force found:', existed2);
+    return existed2;
+  }
 
-  const result = (await Promise.all(promises)).filter(e => e);
-  console.log('[fileExists]', result);
+  console.log('[fileExists] File not found in the all possible buckets');
+  return null;
+}
 
-  return result[0];
 export async function batchExisted(bucketWithPaths: GCSFileDescriptor[]) {
   const results = await Promise.all(
     bucketWithPaths.map(async ({ bucket, path }) => {
