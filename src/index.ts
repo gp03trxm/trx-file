@@ -1,5 +1,4 @@
 import path from 'node:path';
-import _ from 'lodash';
 import cors from 'cors';
 import crop from './image-process/crop.js';
 import db from './libs/db.js';
@@ -28,7 +27,7 @@ import {
   uploadMiddleware,
 } from './middlewares/index.js';
 import { LogType } from '@trx/trx-types';
-import e from 'cors';
+import { pick } from 'radash';
 
 gcsInit().catch(console.error);
 fileCleaner.startAsService().catch(console.error);
@@ -77,7 +76,7 @@ app.use('/files', express.static(DESTINATION), async (req, res, next) => {
       console.log(`[GET /files${req.path}] download file from gcs`);
       const [fileMeta, headers] = await download(fileInGcs);
 
-      db.data?.retrievedFiles.push(_.pick(fileMeta, 'name', 'size', 'updated'));
+      db.data?.retrievedFiles.push(pick(fileMeta, ['name', 'size', 'updated']));
       db.write();
       return res.redirect(req.originalUrl);
     }
