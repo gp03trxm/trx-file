@@ -16,10 +16,12 @@ module.exports = {
       env: {
         NODE_ENV: 'development',
         USE_PM2: true,
+        ENABLE_PM2_PLUS: false,
       },
       env_production: {
         NODE_ENV: 'production',
         USE_PM2: true,
+        ENABLE_PM2_PLUS: false,
       },
     },
   ],
