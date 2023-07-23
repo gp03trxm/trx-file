@@ -2,9 +2,11 @@ import { ErrorCode, TrxError } from '@trx/trx-types';
 import { spawnSync } from 'child_process';
 import {
   COMPONENT,
+  ENABLE_PM2_PLUS,
   PM2_PUBLIC_KEY,
   PM2_SECRET_KEY,
   SITE_NAME,
+  USE_PM2,
 } from '../constants.js';
 import { init as ioInit } from './pm2-io.js';
 import events from 'events';
@@ -52,29 +54,33 @@ export const isLegacyPath = (filename: string) => {
  * pm2 link 80msvetu4zbynqc 6sfoet4o7sdc7ot MACHINE_NAME
  */
 export const setupPm2 = () => {
-  if (process.env.USE_PM2) {
-    ioInit();
+  if (USE_PM2) {
+    /** Disable pm2 tracing */
+    // ioInit();
 
-    const hostname = `${COMPONENT}-${SITE_NAME}`;
-    try {
-      const result = spawnSync('npx', [
-        'pm2',
-        'link',
-        PM2_SECRET_KEY,
-        PM2_PUBLIC_KEY,
-        hostname,
-      ]);
-      if (result.stdout) {
-        console.log('[setupPm2]', result.stdout.toString());
+    console.log(`[setupPm2] ENABLE_PM2_PLUS: ${ENABLE_PM2_PLUS}`);
+    if (ENABLE_PM2_PLUS) {
+      try {
+        const hostname = `${COMPONENT}-${SITE_NAME}`;
+        const result = spawnSync('npx', [
+          'pm2',
+          'link',
+          PM2_SECRET_KEY,
+          PM2_PUBLIC_KEY,
+          hostname,
+        ]);
+        if (result.stdout) {
+          console.log('[setupPm2]', result.stdout.toString());
+        }
+        if (result.stderr) {
+          console.log('[setupPm2]', result.stderr.toString());
+        }
+        if (result.error) {
+          console.error('[setupPm2]', result.error);
+        }
+      } catch (e) {
+        console.error('[setupPm2]', e);
       }
-      if (result.stderr) {
-        console.log('[setupPm2]', result.stderr.toString());
-      }
-      if (result.error) {
-        console.error('[setupPm2]', result.error);
-      }
-    } catch (e) {
-      console.error('[setupPm2]', e);
     }
 
     try {
